@@ -1,0 +1,65 @@
+<div *ngIf="!loadFormView">
+  <mat-spinner></mat-spinner>
+</div>
+
+<div *ngIf="loadFormView">
+
+  <h2 mat-dialog-title fxLayout="row" fxLayoutAlign="center center" class="modal-header">
+    {{formTitle.onoma}} </h2>
+  <mat-dialog-content class="mat-typography">
+    <form [formGroup]="formGroup">
+    <table class="table table-responsive mt">
+      <thead class="text-wrap">
+      <tr>
+        <th class="text-center col-2 bg-info">{{tableHeaders[0]?.onoma}}</th> <!-- onoma field -->
+        <th class="text-center col-2 bg-info">{{tableHeaders[1]?.onoma}}</th> <!-- typos field -->
+        <th class="text-center col-2 bg-info">{{tableHeaders[2]?.onoma}}</th> <!-- actions -->
+      </tr>
+
+      </thead>
+      <tbody *ngIf="formGroup.controls.rows.value.length !== 0">
+      <ng-container formArrayName="rows"
+                    *ngFor="let field of formGroup['controls'].rows['controls']; index as i">
+        <tr *ngIf="field.get('isEditable').value" [formGroupName]="i">
+          <!-- onoma -->
+          <td class="text-center">
+            <mat-form-field>
+              <textarea matInput formControlName="onoma"></textarea>
+            </mat-form-field>
+          </td>
+          <!-- typos -->
+          <td class="text-center">
+            {{field.get('typos').value}}
+          </td>
+
+          <td class="text-center">
+            <mat-icon (click)="saveField(field)" class="done">done</mat-icon>
+            <mat-icon (click)="returnField()" class="delete">clear</mat-icon>
+          </td>
+        </tr>
+        <tr *ngIf="!field.get('isEditable').value">
+          <!-- discussionDate -->
+          <td class="text-center">
+            {{field.get('onoma').value}}
+          </td>
+          <!-- typos -->
+          <td class="text-center">
+            {{field.get('typos').value}}
+          </td>
+
+          <td class="text-center">
+            <mat-icon (click)="editField(field)" class="edit">edit</mat-icon>
+          </td>
+        </tr>
+
+      </ng-container>
+      </tbody>
+    </table>
+  </form>
+  </mat-dialog-content>
+  <mat-dialog-actions class="justify-content-end modal-footer">
+    <button mat-button color="warn" (click)="close()"> {{noButton.onoma}} </button>
+    <button mat-button color="primary" mat-dialog-close (click)="yes()">{{yesButton.onoma}}</button>
+  </mat-dialog-actions>
+</div>
+

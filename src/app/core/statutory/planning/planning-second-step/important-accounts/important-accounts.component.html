@@ -1,0 +1,309 @@
+<div *ngIf="!initialised" class="text-center ml-50-percentage display-content">
+  <mat-spinner></mat-spinner>
+</div>
+
+<mat-card *ngIf="initialised">
+  <div fxLayout="row wrap" class="mt">
+    <div class="page-title mt" fxFlex="60%">
+      {{formTitle?.onoma}}
+      <mat-icon matTooltipPosition="right" *ngIf="formTitle.infos !== null" [matTooltip]="formTitle?.infos">info
+      </mat-icon>
+    </div>
+
+  </div>
+
+  <mat-card-content>
+
+    <fieldset class="fieldset" [disabled]="formGroup.controls.status.value === 'COMPLETED' || !memberCanMakeChangesIntoForm">
+
+      <div>
+
+        <!-- div for formTile info field -->
+        <div class="mt mb" [id]="formTitle?.keli" [class]="formTitle?.css">
+          <div fxFlex.gt-sm="100%" [innerHTML]="formTitle?.help">
+          </div>
+          <div class="justify-content-end">
+            <button mat-button (click)="removeHelpField(formTitle?.keli)">
+              <mat-icon [ngClass]="{'disable': formGroup.controls.status.value === 'COMPLETED' || !memberCanMakeChangesIntoForm}">
+                clear
+              </mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <form [formGroup]="formGroup">
+
+          <div *ngFor="let field of importantAccountFields">
+
+            <div class="mb" *ngIf="field.typos === 'NUMBER'">
+
+              <!-- Help field -->
+              <div [id]="field.keli" [class]="field.css" *ngIf="field.help !== null">
+                <div fxFlex.gt-sm="100%" [innerHTML]="field.help">
+                </div>
+                <div class="justify-content-end">
+                  <button mat-button (click)="removeHelpField(formTitle?.keli)">
+                    <mat-icon [ngClass]="{'disable': (formGroup.controls.status.value === 'COMPLETED' || !memberCanMakeChangesIntoForm)}">
+                      clear
+                    </mat-icon>
+                  </button>
+                </div>
+              </div>
+
+              <div fxFlex.gt-sm="100%" class="mt">{{field.onoma}}
+                <mat-icon *ngIf="field.infos !== null" [matTooltip]="field?.infos" matTooltipPosition="right" color="primary">info
+                </mat-icon>
+                <span class="text-bold ml">
+                    {{importantAccountDto.perAmount}}
+                  </span>
+              </div>
+
+            </div>
+
+            <div *ngIf="field.typos === 'MODAL add231'">
+              <table class="table table-responsive mt tableFixHead" *ngIf="importantAccountDto">
+                <thead class="text-nowrap">
+                <th class="text-center bg-info">{{displayHeadersForAdd231Table[0]}}</th>
+                <th class="text-center bg-info">{{displayHeadersForAdd231Table[1]}}</th>
+                <th class="text-center bg-info">{{displayHeadersForAdd231Table[3]}}</th>
+                <th class="text-center bg-info">{{displayHeadersForAdd231Table[4]}}</th>
+                <th class="text-center bg-info">{{displayHeadersForAdd231Table[5]}}</th>
+                <th class="text-center bg-info">{{displayHeadersForAdd231Table[6]}}</th>
+                <th class="text-center bg-info">{{displayHeadersForAdd231Table[7]}}</th>
+                </thead>
+                <tbody>
+                <ng-container formArrayName="importantAccountAddRequestDtoList"
+                              *ngFor="let group of formGroup['controls'].importantAccountAddRequestDtoList['controls']; index as i">
+                  <tr *ngIf="group.get('isEditable').value" [formGroupName]="i">
+                    <td class="text-left">
+                      {{group.get('lineName').value}}
+                    </td>
+                    <td class="text-right ">
+                      {{group.get('amount').value}}€
+                    </td>
+                    <td class="text-center">
+                      <button mat-stroked-button
+                              [ngClass]="{'bg-light-green': group.get('essential').value === true,
+                               'disable': (formGroup.controls.status.value === 'COMPLETED' || !memberCanMakeChangesIntoForm)}"
+                              [disabled]="group.get('isEditable').value" class="button-border-radius">
+                        <div *ngIf="this.currentLang === 'el' && group.get('essential').value === true">Ναι</div>
+                        <div *ngIf="this.currentLang === 'el' && group.get('essential').value === false">Όχι</div>
+                        <div *ngIf="this.currentLang === 'el' && group.get('essential').value === null">Δ/Α</div>
+                        <div *ngIf="this.currentLang === 'en' && group.get('essential').value === true">Yes</div>
+                        <div *ngIf="this.currentLang === 'en' && group.get('essential').value === false">No</div>
+                        <div *ngIf="this.currentLang === 'en' && group.get('essential').value === null">N/A</div>
+                      </button>
+                    </td>
+                    <!-- Column for Significant (Σημαντική)-->
+                    <td class="text-center">
+                      <button mat-stroked-button
+                              [ngClass]="{'bg-dark-green': group.get('important').value === true, 'disable': (formGroup.controls.status.value === 'COMPLETED' || !memberCanMakeChangesIntoForm)}"
+                              [disabled]="!group.get('isEditable').value || group.get('importantRisk').value" class="button-border-radius"
+                              (click)="changeGroupFieldValue(group, 'important')">
+                        <div *ngIf="this.currentLang === 'el' && group.get('important').value === true">Ναι</div>
+                        <div *ngIf="this.currentLang === 'el' && group.get('important').value === false">Όχι</div>
+                        <div *ngIf="this.currentLang === 'el' && group.get('important').value === null">Δ/Α</div>
+                        <div *ngIf="this.currentLang === 'en' && group.get('important').value === true">Yes</div>
+                        <div *ngIf="this.currentLang === 'en' && group.get('important').value === false">No</div>
+                        <div *ngIf="this.currentLang === 'en' && group.get('important').value === null">N/A</div>
+                      </button>
+                    </td>
+                    <!-- new td with button toggle-->
+                    <td class="text-center">
+                      <mat-button-toggle-group aria-label="Font Style">
+                        <mat-button-toggle (click)="changeFormControlValue(group, 'y')"
+                                           [disabled]="!group.get('important').value"
+                                           [value]="group.y"
+                                           [ngClass]="{'bg-light-orange-radius': (group.get('y').value === 1 || (group.get('y').value === 5 && group.get('important').value)), 'disable': (!group.get('important').value || !memberCanMakeChangesIntoForm)}">
+                          <span [matTooltip]="yFormField?.infos" matTooltipPosition="above">{{yFormField.onoma}}</span>
+                        </mat-button-toggle>
+                        <mat-button-toggle (click)="changeFormControlValue(group, 'pd')"
+                                           [disabled]="!group.get('important').value"
+                                           [value]="group.pd"
+                                           [ngClass]="{'bg-light-orange-radius': (group.get('pd').value === 1 || (group.get('pd').value === 5 && group.get('important').value)), 'disable': (!group.get('important').value || !memberCanMakeChangesIntoForm)}">
+                          <span [matTooltip]="pdFormField?.infos" matTooltipPosition="above">{{pdFormField.onoma}}</span>
+                        </mat-button-toggle>
+                        <mat-button-toggle (click)="changeFormControlValue(group, 'ak')"
+                                           [disabled]="!group.get('important').value"
+                                           [value]="group.ak"
+                                           [ngClass]="{'bg-light-orange-radius': (group.get('ak').value === 1 || (group.get('ak').value === 5 && group.get('important').value)), 'disable': (!group.get('important').value || !memberCanMakeChangesIntoForm)}">
+                          <span [matTooltip]="akFormField?.infos" matTooltipPosition="above">{{akFormField.onoma}}</span>
+                        </mat-button-toggle>
+                        <mat-button-toggle (click)="changeFormControlValue(group, 'ap')"
+                                           [disabled]="!group.get('important').value"
+                                           [value]="group.ap"
+                                           [ngClass]="{'bg-light-orange-radius':(group.get('ap').value === 1 || (group.get('ap').value === 5 && group.get('important').value)), 'disable': (!group.get('important').value || !memberCanMakeChangesIntoForm)}">
+                          <span [matTooltip]="apFormField?.infos" matTooltipPosition="above">{{apFormField.onoma}}</span>
+                        </mat-button-toggle>
+                        <mat-button-toggle (click)="changeFormControlValue(group, 'dd')"
+                                           [disabled]="!group.get('important').value"
+                                           [value]="group.dd"
+                                           [ngClass]="{'bg-light-orange-radius': (group.get('dd').value === 1 || (group.get('dd').value === 5 && group.get('important').value)), 'disable': (!group.get('important').value || !memberCanMakeChangesIntoForm)}">
+                        <span [matTooltip]="ddFormField?.infos"
+                              matTooltipPosition="above">{{ddFormField.onoma}}</span>
+                        </mat-button-toggle>
+                        <mat-button-toggle (click)="changeFormControlValue(group, 'tp')"
+                                           [disabled]="!group.get('important').value"
+                                           [value]="group.tp"
+                                           [ngClass]="{'bg-light-orange-radius': (group.get('tp').value === 1 || (group.get('tp').value === 5 && group.get('important').value)), 'disable': (!group.get('important').value || !memberCanMakeChangesIntoForm)}">
+                        <span [matTooltip]="tpFormField?.infos"
+                              matTooltipPosition="above">{{tpFormField.onoma}}</span>
+                        </mat-button-toggle>
+                      </mat-button-toggle-group>
+
+                    </td>
+                    <!-- Column for Evaluation(Εκτίμηση) -->
+                    <td class="text-center">
+                      <button mat-stroked-button [disabled]="group.get('importantAssessment').value === true"
+                              [ngClass]="{'bg-megna': group.get('assessment').value === true, 'disable': (!group.get('important').value || !memberCanMakeChangesIntoForm || formGroup.controls.status.value === 'COMPLETED')}"
+                              (click)="changeGroupFieldValue(group, 'assessment')"
+                              class="button-border-radius">
+                        <div *ngIf="this.currentLang === 'el' && group.get('assessment').value === true">Ναι</div>
+                        <div *ngIf="this.currentLang === 'el' && group.get('assessment').value === false">Όχι</div>
+                        <div *ngIf="this.currentLang === 'el' && group.get('assessment').value === null">Δ/Α</div>
+                        <div *ngIf="this.currentLang === 'en' && group.get('assessment').value === true">Yes</div>
+                        <div *ngIf="this.currentLang === 'en' && group.get('assessment').value === false">No</div>
+                        <div *ngIf="this.currentLang === 'en' && group.get('assessment').value === null">N/A</div>
+                      </button>
+                    </td>
+                    <td class="text-center">
+                      <mat-icon class="done" *ngIf="checkUserCanSaveGroup(group)" (click)="doneRow(group)">done</mat-icon>
+                      <mat-icon class="delete" (click)="return(group)">clear</mat-icon>
+                    </td>
+                  </tr>
+                  <!-- isEditable value = false -->
+                  <tr *ngIf="!group.get('isEditable').value">
+                    <td class="text-left">
+                      {{group.get('lineName').value}}
+                    </td>
+                    <td class="text-right ">
+                      {{group.get('amount').value}}€
+                    </td>
+                    <td class="text-center">
+                      <button mat-stroked-button
+                              [ngClass]="{'bg-light-green': group.get('essential').value === true, 'disable': (formGroup.controls.status.value === 'COMPLETED' || !memberCanMakeChangesIntoForm)}"
+                              [disabled]="!group.get('isEditable').value" class="button-border-radius">
+                        <div *ngIf="this.currentLang === 'el' && group.get('essential').value === true">Ναι</div>
+                        <div *ngIf="this.currentLang === 'el' && group.get('essential').value === false">Όχι</div>
+                        <div *ngIf="this.currentLang === 'el' && group.get('essential').value === null">Δ/Α</div>
+                        <div *ngIf="this.currentLang === 'en' && group.get('essential').value === true">Yes</div>
+                        <div *ngIf="this.currentLang === 'en' && group.get('essential').value === false">No</div>
+                        <div *ngIf="this.currentLang === 'en' && group.get('essential').value === null">N/A</div>
+                      </button>
+                    </td>
+                    <td class="text-center">
+                      <button mat-stroked-button
+                              [ngClass]="{'bg-dark-green': group.get('important').value === true, 'disable': (formGroup.controls.status.value === 'COMPLETED' || !memberCanMakeChangesIntoForm)}"
+                              (click)="changeGroupFieldValue(group, 'important')"
+                              [disabled]="!group.get('isEditable').value" class="button-border-radius">
+                        <div *ngIf="this.currentLang === 'el' && group.get('important').value === true">Ναι</div>
+                        <div *ngIf="this.currentLang === 'el' && group.get('important').value === false">Όχι</div>
+                        <div *ngIf="this.currentLang === 'el' && group.get('important').value === null">Δ/Α</div>
+                        <div *ngIf="this.currentLang === 'en' && group.get('important').value === true">Yes</div>
+                        <div *ngIf="this.currentLang === 'en' && group.get('important').value === false">No</div>
+                        <div *ngIf="this.currentLang === 'en' && group.get('important').value === null">N/A</div>
+                      </button>
+                    </td>
+                    <!-- new td -->
+                    <td class="text-center">
+                      <mat-button-toggle-group aria-label="Font Style"
+                                               [ngClass]="{'disable': !group.get('important').value || !group.get('isEditable').value}"
+                                               [disabled]="!group.get('important').value || !group.get('isEditable').value">
+                        <mat-button-toggle
+                          [ngClass]="{'bg-light-orange-radius': group.get('y').value === 1}"
+                          [disabled]="!group.get('important').value">
+                          <span [matTooltip]="yFormField?.infos" matTooltipPosition="above">{{yFormField.onoma}}</span>
+                        </mat-button-toggle>
+                        <mat-button-toggle
+                          [ngClass]="{'bg-light-orange-radius': group.get('pd').value === 1}"
+                          [disabled]="!group.get('important').value">
+                          <span [matTooltip]="pdFormField?.infos" matTooltipPosition="above">{{pdFormField.onoma}}</span>
+                        </mat-button-toggle>
+                        <mat-button-toggle
+                          [ngClass]="{'bg-light-orange-radius': group.get('ak').value === 1}"
+                          [disabled]="!group.get('important').value">
+                          <span [matTooltip]="akFormField?.infos" matTooltipPosition="above">{{akFormField.onoma}}</span>
+                        </mat-button-toggle>
+                        <mat-button-toggle
+                          [ngClass]="{'bg-light-orange-radius': group.get('ap').value === 1}"
+                          [disabled]="!group.get('important').value">
+                          <span [matTooltip]="apFormField?.infos" matTooltipPosition="above">{{apFormField.onoma}}</span>
+                        </mat-button-toggle>
+                        <mat-button-toggle
+                          [ngClass]="{'bg-light-orange-radius': group.get('dd').value === 1}"
+                          [disabled]="!group.get('important').value">
+                        <span [matTooltip]="ddFormField?.infos"
+                              matTooltipPosition="above">{{ddFormField.onoma}}</span>
+                        </mat-button-toggle>
+                        <mat-button-toggle
+                          [ngClass]="{'bg-light-orange-radius': group.get('tp').value === 1}"
+                          [disabled]="!group.get('important').value">
+                        <span [matTooltip]="tpFormField?.infos"
+                              matTooltipPosition="above">{{tpFormField.onoma}}</span>
+                        </mat-button-toggle>
+                      </mat-button-toggle-group>
+                    </td>
+                    <td class="text-center">
+                      <button mat-stroked-button
+                              [ngClass]="{'bg-megna': group.get('assessment').value === true, 'disable': (formGroup.controls.status.value === 'COMPLETED' || !memberCanMakeChangesIntoForm)}"
+                              (click)="changeGroupFieldValue(group, 'assessment')"
+                              [disabled]="!group.get('isEditable').value" class="button-border-radius">
+                        <div *ngIf="this.currentLang === 'el' && group.get('assessment').value === true">Ναι</div>
+                        <div *ngIf="this.currentLang === 'el' && group.get('assessment').value === false">Όχι</div>
+                        <div *ngIf="this.currentLang === 'el' && group.get('assessment').value === null">Δ/Α</div>
+                        <div *ngIf="this.currentLang === 'en' && group.get('assessment').value === true">Yes</div>
+                        <div *ngIf="this.currentLang === 'en' && group.get('assessment').value === false">No</div>
+                        <div *ngIf="this.currentLang === 'en' && group.get('assessment').value === null">N/A</div>
+                      </button>
+                    </td>
+                    <td class="text-center">
+                      <mat-icon class="edit" (click)="editRow(group)"
+                                [ngClass]="{'disable': formGroup.controls.status.value === 'COMPLETED' || !memberCanMakeChangesIntoForm}">edit
+                      </mat-icon>
+                    </td>
+                  </tr>
+                </ng-container>
+
+
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+
+
+        </form>
+
+      </div>
+
+
+    </fieldset>
+
+  </mat-card-content>
+
+  <mat-card-footer>
+    <div fxLayout="row" fxLayoutAlign="end center">
+      <div class="mb mr">
+
+        <button mat-button color="primary" (click)="save()"
+                *ngIf="(formGroup?.controls?.status?.value !== 'COMPLETED')" [disabled]="formGroup.invalid || !memberCanMakeChangesIntoForm">
+          <i class="material-icons">save</i> {{saveButton.onoma}}
+        </button>
+        <button mat-button color="accent" (click)="edit()" [disabled]="!memberCanMakeChangesIntoForm"
+                *ngIf="(formGroup?.controls?.status.value === 'COMPLETED')">
+          <i class="material-icons">edit</i> {{editButton.onoma}}
+        </button>
+        <button mat-button color="warn" (click)="back()">
+          <i class="material-icons">arrow_back</i> {{returnButton.onoma}}
+        </button>
+        <button mat-button color="accent" (click)="complete()" [disabled]="formGroup.invalid || !memberCanMakeChangesIntoForm"
+                *ngIf="(formGroup.controls?.status?.value === null || formGroup.controls?.status?.value === 'PROCESSED' || formGroup.controls?.status?.value === 'SAVED')">
+          <i class="material-icons">done</i> {{completeButton.onoma}}
+        </button>
+
+      </div>
+    </div>
+  </mat-card-footer>
+
+</mat-card>
+

@@ -1,0 +1,90 @@
+<div *ngIf="loadingFormList">
+  <mat-spinner class="mat-spinner-center"></mat-spinner>
+</div>
+
+<h2 *ngIf="!loadingFormList" mat-dialog-title fxLayout="row" fxLayoutAlign="center center" class="modal-header">
+  {{title + ' ' + data.member.lastname + ' ' + data.member.firstname}} </h2>
+<mat-dialog-content *ngIf="!loadingFormList" class="mat-typography">
+  <p>{{paragraph}}</p>
+
+  <div class="container" >
+    <div class="text-left mt-5">
+      <!-- phase -->
+      <div class="row">
+        <div class="col-md-6">
+          <ul class="list-group" id="parentListGroup">
+            <li class="list-group-item" *ngFor="let parent of parentAssignFormList">
+              <div class="bg-blue-color-without-height">
+                <input (change)="isParentSelected(parent)" [(ngModel)]="parent.checked" name="list_name" type="checkbox"
+                       value="{{parent.phase}}"/>
+                {{parent.name}}
+              </div>
+              <!-- phase of each parent -->
+              <div class="row">
+                <div class="col-md-6 ml-25-px">
+                  <ul class="list-group" id="phaseListGroup">
+                    <li class="list-group-item" *ngFor="let phase of parent.phases">
+                      <div class="bg-light-blue-color-without-height">
+                        <input (change)="isPhaseSelected(phase)" [(ngModel)]="phase.checked" name="list_name"
+                               type="checkbox" value="{{phase.phase}}"/>
+                        {{phase.name}}
+                      </div>
+                      <!-- step of each phase -->
+                      <div class="row">
+                        <div class="col-md-6 ml-25-px">
+                          <ul class="list-group" id="stepListGroup">
+                            <li class="list-group-item" *ngFor="let step of phase.steps">
+                              <input (change)="isStepSelected(step, parent)" [(ngModel)]="step.checked" name="list_name"
+                                     type="checkbox" value="{{step.phase}}"/>
+                              {{step.name}}
+
+                              <!-- form of each step -->
+                              <div class="row">
+                                <div class="col-md-6 ml-25-px">
+                                  <ul class="list-group">
+                                    <li class="list-group-item" *ngFor="let form of step.forms">
+                                      <input (change)="isFormSelected(form)" [(ngModel)]="form.checked" name="list_name"
+                                             type="checkbox" value="{{form.id}}"/>
+                                      {{form.formName}}
+                                      <!-- assigned member of each form -->
+                                      <div class="row">
+                                        <div class="col-md-6 ml-25-px">
+                                          <ul class="list-group">
+                                            <li class="list-group-item" *ngFor="let member of form.members" >
+                                              <span class="text-info">{{member.lastName + ' ' + member.firstName}}</span>
+                                            </li>
+                                          </ul>
+                                        </div>
+                                      </div>
+
+                                    </li>
+                                  </ul>
+                                </div>
+                              </div>
+
+                            </li>
+                          </ul>
+
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+
+
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</mat-dialog-content>
+
+<mat-dialog-actions *ngIf="!loading" class="justify-content-end modal-footer">
+  <button mat-button color="warn" (click)="close()"> {{noButton}} </button>
+  <button mat-button color="primary" mat-dialog-close (click)="yes()">{{yesButton}}</button>
+</mat-dialog-actions>

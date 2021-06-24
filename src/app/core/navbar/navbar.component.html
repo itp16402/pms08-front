@@ -1,0 +1,93 @@
+<div class="main-container" [dir]="dir"
+     [ngClass]="{'minisidebar': minisidebar, 'boxed': boxed, 'danger': danger, 'blue': blue, 'green': green, 'dark': dark }">
+  <!-- ============================================================== -->
+  <!-- Topbar - style you can find in header.scss -->
+  <!-- ============================================================== -->
+  <mat-toolbar color="primary" class="topbar telative">
+    <div class="navbar-header">
+      <a class="navbar-brand" [routerLink]="['/', this.currentLang, 'projects']">
+        <mat-icon color="primary" style="margin-left: 40%">home</mat-icon>
+      </a>
+    </div>
+    <!-- ============================================================== -->
+    <!-- Logo - style you can find in header.scss -->
+    <!-- ============================================================== -->
+    <!--  <div class="navbar-header">-->
+    <!--    <a class="navbar-brand" href="/">-->
+    <!--    </a>-->
+    <!--  </div>-->
+    <!-- ============================================================== -->
+    <!-- sidebar toggle -->
+    <!-- ============================================================== -->
+
+    <div>
+      <button  mat-icon-button (click)="sidenav.toggle() && clickEvent($event)" [disabled]="url !== 'home'">
+        <mat-icon>menu</mat-icon>
+      </button>
+    </div>
+
+    <!-- Buttons for Actions, Tools ans Displays -->
+    <div *ngIf="url === 'home'" class="ml row">
+
+<!--      <button mat-raised-button color="warn" [matMenuTriggerFor]="actions">{{actionHeader}}</button>-->
+<!--      <mat-menu #actions="matMenu" >-->
+<!--          <button mat-menu-item>Action1</button>-->
+<!--      </mat-menu>-->
+<!--      <button mat-button class="custom-navbar-order-info ml" [matTooltip]="orderInfo.customerName + ' - ' + orderInfo.customerAfm  + ' - ' + orderInfo.status" matTooltipPosition="right">-->
+<!--        {{orderInfo.orderId + ' - ' +  orderInfo.orderTypeComments}}-->
+<!--      </button>-->
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- Search - style you can find in header.scss -->
+    <!-- ============================================================== -->
+    <span fxFlex></span>
+    <!-- ============================================================== -->
+    <!-- app header component - style you can find in header.scss / header.component.ts-->
+    <!-- ============================================================== -->
+
+    <button mat-button [matMenuTriggerFor]="user" *ngIf="userInfoLoaded">
+      <mat-icon>person</mat-icon> {{userDtoModel.lastName + ' ' + userDtoModel.firstName}}
+    </button>
+    <mat-menu #user="matMenu" >
+      <button mat-menu-item (click)="this.loginService.logout()">
+        <mat-icon >exit_to_app</mat-icon> {{logout}}
+      </button>
+    </mat-menu>
+
+    <button mat-button (click)="changeLanguage()" *ngIf="currentLang==='en'">
+      <img  class="flag-icon flag-icon-gr"
+           style="visibility: visible" src="assets/images/flags/gr.svg">
+    </button>
+    <button mat-button (click)="changeLanguage()" *ngIf="currentLang==='el'">
+      <img  class="flag-icon flag-icon-gb"
+           style="visibility: visible" src="assets/images/flags/gb.svg">
+    </button>
+    <!-- ============================================================== -->
+    <!-- Right sidebar toggle - style you can find in rightsidebar.component.scss -->
+    <!-- ============================================================== -->
+  </mat-toolbar>
+  <mat-sidenav-container class="example-sidenav-container" >
+    <!-- ============================================================== -->
+    <!-- Sidebar - style you can find in sidebar.scss -->
+    <!-- ============================================================== -->
+    <mat-sidenav #sidenav id="snav" class="custom-width" [mode]="mobileQuery.matches ? 'side' : 'over'"
+                 fixedTopGap="0" [opened]="mobileQuery.matches" [disableClose]="mobileQuery.matches"
+                 (open)="sidebarOpened = false" (close)="sidebarOpened = true" [perfectScrollbar]="config">
+      <app-sidebar class="app-sidebar" [url]="url"></app-sidebar>
+    </mat-sidenav>
+
+    <mat-sidenav-content class="page-wrapper " *ngIf="url === 'home'">
+
+      <div class="page-content" >
+        <router-outlet></router-outlet>
+
+      </div>
+
+    </mat-sidenav-content>
+    <!-- ============================================================== -->
+    <!-- Page container - style you can find in pages.scss -->
+    <!-- ============================================================== -->
+  </mat-sidenav-container>
+
+</div>

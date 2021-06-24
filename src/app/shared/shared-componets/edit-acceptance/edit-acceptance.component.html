@@ -1,0 +1,11 @@
+<mat-icon class="custom-dialog-header-icon">report</mat-icon>
+<h2 mat-dialog-title fxLayout="row" fxLayoutAlign="center center" class="modal-header">
+   {{title}} </h2>
+<mat-dialog-content class="mat-typography" >
+  <p>{{paragraph}}</p>
+</mat-dialog-content>
+
+<mat-dialog-actions class="justify-content-end modal-footer">
+  <button mat-button color="warn" (click)="close()"> {{noButton}} </button>
+  <button mat-button color="primary" mat-dialog-close (click)="yes()">{{yesButton}}</button>
+</mat-dialog-actions>

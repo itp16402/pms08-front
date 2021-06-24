@@ -1,0 +1,223 @@
+<div *ngIf="!initialised && !loadFormStatus" class="text-center ml-50-percentage display-content">
+  <mat-spinner></mat-spinner>
+</div>
+
+<mat-card *ngIf="initialised && loadFormStatus">
+  <div fxLayout="row wrap" class="mt">
+    <div class="page-title mt" fxFlex="60%">
+      {{formTitle?.onoma}}
+      <mat-icon matTooltipPosition="right" *ngIf="formTitle.infos !== null" [matTooltip]="formTitle?.infos" color="primary">info
+      </mat-icon>
+    </div>
+
+  </div>
+
+  <mat-card-content>
+    <div fxLayout="row wrap">
+      <div fxFlex.gt-sm="100%" *ngFor="let field of controlTeamFormViewModel; index as i">
+
+
+        <div class="row mb" *ngIf="field.typos === 'OWNER'">
+
+          <div fxFlex.gt-sm="30%">{{field.onoma}}
+            <mat-icon *ngIf="field.infos != null" [matTooltip]="field?.infos" matTooltipPosition="right" color="primary">info</mat-icon>
+          </div>
+
+          <div fxFlex.gt-sm="30%">
+            <mat-chip-list>
+               <span *ngFor="let owner of ownerList">
+                    <mat-chip
+                      [disabled]="!isAdmin"
+                    >{{owner?.firstName + ' ' + owner?.lastName}} </mat-chip>
+                </span>
+            </mat-chip-list>
+
+          </div>
+
+        </div>
+
+        <div class="row mb" *ngIf="field.typos === 'PARTNER' && partnerList.length > 0">
+
+          <div fxFlex.gt-sm="30%">{{field.onoma}}
+            <mat-icon *ngIf="field.infos != null" [matTooltip]="field?.infos" matTooltipPosition="right" color="primary">info</mat-icon>
+          </div>
+
+          <div fxFlex.gt-sm="30%">
+            <mat-chip-list>
+               <span *ngFor="let partner of partnerList">
+                    <mat-chip
+                      [disabled]="!isAdmin"
+                    >{{partner?.firstName + ' ' + partner?.lastName}} </mat-chip>
+                </span>
+            </mat-chip-list>
+          </div>
+
+        </div>
+
+        <!-- ADMIN DIV -->
+        <div class="row mb" *ngIf="field.typos === 'ADMIN'">
+
+          <div fxFlex.gt-sm="30%">{{field.onoma}}
+            <mat-icon *ngIf="field.infos != null" [matTooltip]="field?.infos" matTooltipPosition="right" color="primary">info</mat-icon>
+          </div>
+
+          <div fxLayout="row" fxLayoutAlign="center center" *ngIf="managerList.length > 0">
+            <div>
+              <mat-chip-list>
+                <mat-chip *ngFor="let admin of managerList"
+                          [removable]="removable"
+                          (removed)="deleteAdmin(admin)"
+                          [disabled]="isEqcr || isMember">
+                  {{admin?.firstName + ' ' + admin?.lastName}}
+                  <mat-icon matChipRemove *ngIf="removable && isOwner"
+                            [ngClass]="{'disable': formGroup.controls.status.value === 'COMPLETED'}">
+                    cancel</mat-icon>
+                </mat-chip>
+              </mat-chip-list>
+            </div>
+
+          </div>
+
+          <div *ngIf="(managerList.length === 0 && isAdmin) || (managerList.length === 0 && isOwner)" fxFlex="50%">
+            <div>
+              <mat-form-field>
+                <input matInput #adminInput [placeholder]="searchAdminPlaceHolder" [formControl]="adminCtrl"
+                       [matAutocomplete]="auto">
+                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectedAdmin($event)">
+                  <mat-option *ngIf="isLoading" class="is-loading">
+                    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                  </mat-option>
+                  <ng-container *ngIf="!isLoading">
+                    <mat-option *ngFor="let member of filteredMembers" [value]="member">
+                      <span>{{member.lastName + ' ' + member.firstName}}</span>
+                    </mat-option>
+                  </ng-container>
+                </mat-autocomplete>
+              </mat-form-field>
+            </div>
+
+          </div>
+
+        </div>
+        <!-- MEMBER DIV -->
+        <div class="row mb" *ngIf="field.typos === 'MEMBER'">
+
+          <div fxFlex.gt-sm="30%">{{field.onoma}}
+            <mat-icon *ngIf="field.infos != null" [matTooltip]="field?.infos" matTooltipPosition="right" color="primary">info</mat-icon>
+          </div>
+
+          <div fxLayout="column" fxLayoutAlign="space-evenly none" [ngClass]="{'disable': formGroup.controls.status.value === 'COMPLETED', 'disable': memberCanMakeChangesIntoForm === false}">
+            <mat-form-field *ngIf="isAdmin" [ngClass]="{'disable': formGroup.controls.status.value === 'COMPLETED', 'disable': memberCanMakeChangesIntoForm === false}">
+              <input matInput #memberInput [placeholder]="searchPlaceHolder" [formControl]="memberCtrl"
+                     [ngClass]="{'disable': formGroup.controls.status.value === 'COMPLETED', 'disable': memberCanMakeChangesIntoForm === false}"
+                     [matAutocomplete]="auto">
+              <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectedMember($event)">
+                <mat-option *ngIf="isLoading" class="is-loading">
+                  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                </mat-option>
+                <ng-container *ngIf="!isLoading">
+                  <mat-option *ngFor="let member of filteredMembers" [value]="member">
+                    <span>{{member.lastName + ' ' + member.firstName}}</span>
+                  </mat-option>
+                </ng-container>
+              </mat-autocomplete>
+            </mat-form-field>
+
+            <mat-chip-list>
+              <mat-chip
+                *ngFor="let member of memberList"
+                (click)="assignFormsToMember('member', member)"
+                [selectable]="isAdmin"
+                [disabled]="!isAdmin || formGroup.controls.status.value === 'COMPLETED' || memberCanMakeChangesIntoForm === false"
+                [removable]="removable"
+                (removed)="deleteMember('member', member)"
+                [ngClass]="
+                {
+                    'bg-success': isAdmin,
+                    'disable': formGroup.controls.status.value === 'COMPLETED', 'disable': memberCanMakeChangesIntoForm === false
+                }">
+                {{member?.lastName + ' ' + member?.firstName}}
+                <mat-icon matChipRemove *ngIf="removable && isAdmin"
+                          [ngClass]="{'disable': formGroup.controls.status.value === 'COMPLETED', 'disable': memberCanMakeChangesIntoForm === false}">
+                  cancel
+                </mat-icon>
+              </mat-chip>
+            </mat-chip-list>
+
+          </div>
+
+        </div>
+        <!-- EQCR DIV-->
+        <div class="row mb" *ngIf="field.typos === 'EQCR'">
+
+          <div fxFlex.gt-sm="30%">{{field.onoma}}
+            <mat-icon *ngIf="field.infos != null" [matTooltip]="field?.infos" matTooltipPosition="right" color="primary">info</mat-icon>
+          </div>
+
+          <div fxLayout="column" fxLayoutAlign="space-evenly none" [ngClass]="{'disable': formGroup.controls.status.value === 'COMPLETED', 'disable': memberCanMakeChangesIntoForm === false}">
+            <mat-form-field *ngIf="isAdmin && eqcrList.length >= 0" [ngClass]="{'disable': formGroup.controls.status.value === 'COMPLETED', 'disable': memberCanMakeChangesIntoForm === false}">
+              <input matInput #eqcrInput [placeholder]="searchEqcrPlaceHolder" [formControl]="eqcrCtrl"
+                     [ngClass]="{'disable': formGroup.controls.status.value === 'COMPLETED', 'disable': memberCanMakeChangesIntoForm === false}"
+                     [matAutocomplete]="auto">
+              <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectedEqcr($event)">
+                <mat-option *ngIf="isLoading" class="is-loading" [ngClass]="{'disable': formGroup.controls.status.value === 'COMPLETED', 'disable': memberCanMakeChangesIntoForm === false}">
+                  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                </mat-option>
+                <ng-container *ngIf="!isLoading">
+                  <mat-option *ngFor="let member of filteredMembers" [value]="member">
+                    <span>{{member.lastName + ' ' + member.firstName}}</span>
+                  </mat-option>
+                </ng-container>
+              </mat-autocomplete>
+            </mat-form-field>
+
+            <mat-chip-list>
+              <mat-chip
+                *ngFor="let eqcr of eqcrList"
+                [selectable]="isAdmin"
+                [disabled]="!isAdmin"
+                [removable]="removable"
+                (removed)="deleteMember('member', eqcr)"
+                [ngClass]="
+                {
+                    'bg-success': isAdmin
+                }">
+                {{eqcr?.lastName + ' ' + eqcr?.firstName}}
+                <mat-icon matChipRemove *ngIf="removable && isAdmin"
+                          [ngClass]="{'disable': formGroup.controls.status.value === 'COMPLETED', 'disable': memberCanMakeChangesIntoForm === false}">
+                  cancel</mat-icon>
+              </mat-chip>
+            </mat-chip-list>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </mat-card-content>
+
+  <mat-card-footer>
+    <div fxLayout="row" fxLayoutAlign="end center">
+      <div class="mb mr" >
+
+        <button mat-button color="primary" (click)="save()" [disabled]="memberCanMakeChangesIntoForm === false"
+                *ngIf="(formGroup.controls.status.value !== 'COMPLETED')">
+          <i class="material-icons">save</i> {{saveButton.onoma}}
+        </button>
+        <button mat-button color="accent" (click)="edit()" [disabled]="memberCanMakeChangesIntoForm === false"
+                *ngIf="(formGroup.controls.status.value === 'COMPLETED')">
+          <i class="material-icons">edit</i> {{editButton.onoma}}
+        </button>
+        <button mat-button color="warn" (click)="back()">
+          <i class="material-icons">arrow_back</i> {{returnButton.onoma}}
+        </button>
+        <button mat-button color="accent" (click)="complete()" [disabled]="memberCanMakeChangesIntoForm === false"
+                *ngIf="(formGroup.controls.status.value === null || formGroup.controls.status.value === 'PROCESSED' || formGroup.controls.status.value === 'SAVED')">
+          <i class="material-icons">done</i> {{completeButton.onoma}}
+        </button>
+      </div>
+    </div>
+  </mat-card-footer>
+
+</mat-card>
+

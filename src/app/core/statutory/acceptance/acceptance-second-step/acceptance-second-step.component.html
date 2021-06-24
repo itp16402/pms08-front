@@ -1,0 +1,42 @@
+<div fxLayout="row wrap" *ngIf="loadTitles">
+  <!-- column -->
+  <div fxFlex.gt-sm="25" fxFlex.gt-xs="100" fxFlex="100" *ngFor="let table of this.stepTitle; index as i">
+    <mat-card>
+      <mat-card-content (click)="setTableNameToLocalStorage(stepTitle[i])" [routerLink]="[stepTitle[i].tableName]"
+                        (mouseup)="clicked($event, stepTitle[i])"
+                        [ngClass]="
+                    {
+                    'bg-danger': (table.status === null),
+                    'bg-success': (table.status === 'COMPLETED'),
+                    'bg-warning': ((table.status === 'SAVED') || (table.status === 'PROCESSED'))
+                    }"
+                        class="custom-cursor">
+        <!-- Row -->
+        <div class="d-flex no-block">
+          <div>
+            <h6 class="text-white m-0">{{this.stepTitle[i].onoma}}</h6>
+          </div>
+          <!-- column -->
+          <div class="m-r-10 ml-auto no-shrink">
+            <button mat-fab mat-card-icon class="shadow-none"
+                    [ngClass]="
+                    {
+                    'bg-danger': (table.status === null),
+                    'bg-success': (table.status === 'COMPLETED'),
+                    'bg-warning': ((table.status === 'SAVED') || (table.status === 'PROCESSED'))
+                    }"
+                    (click)="setTableNameToLocalStorage(stepTitle[i])" [routerLink]="[stepTitle[i].tableName]"
+                    (mouseup)="clicked($event, stepTitle[i])"
+            >
+              <mat-icon *ngIf="table.status === 'COMPLETED'">check_circle_outline</mat-icon>
+              <mat-icon *ngIf="table.status === null">input</mat-icon>
+              <mat-icon *ngIf="(table.status === 'SAVED') || (table.status === 'PROCESSED')">create</mat-icon>
+            </button>
+          </div>
+          <!-- column -->
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <!-- column -->
+</div>

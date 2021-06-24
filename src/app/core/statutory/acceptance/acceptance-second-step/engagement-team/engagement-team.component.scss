@@ -1,0 +1,19 @@
+.custom-label-content {
+  padding-left: 2px !important;
+  padding-right: 8px !important;
+}
+
+.mt {
+  margin-top: 15px;
+}
+
+.mb {
+  margin-bottom: 15px;
+}
+
+.disable:hover{
+  cursor: not-allowed;
+}
+.disable:active{
+  pointer-events: none;
+}

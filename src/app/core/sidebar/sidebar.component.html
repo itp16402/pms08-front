@@ -1,0 +1,48 @@
+<!-- ============================================================== -->
+<!-- sidebar -->
+<!-- ============================================================== -->
+
+<mat-nav-list appAccordion >
+  <button mat-raised-button class="bg-custom-color custom-button" (click)="statutoryPressed()" *ngIf="statutoryLoaded">{{this.statutoryParent}}</button>
+  <div *ngIf="statutoryParentPressed"><mat-list-item appAccordionLink *ngFor="let menuitem of flowChartStatutory" routerLinkActive="selected" group="{{menuitem.state}}" (click)="scrollToTop()">
+    <a class="" appAccordionToggle [routerLink]="['/', menuitem.state]" *ngIf="menuitem.type === 'link'">
+      <mat-icon>{{ menuitem.icon }}</mat-icon>
+      <span>{{ menuitem.name }}</span>
+      <span fxFlex></span>
+    </a>
+
+    <a class="" appAccordionToggle href="{{menuitem.state}}" *ngIf="menuitem.type === 'extLink'">
+      <mat-icon>{{ menuitem.icon }}</mat-icon>
+      <span>{{ menuitem.name }}</span>
+      <span fxFlex></span>
+    </a>
+    <a class="" appAccordionToggle href="{{menuitem.state}}" target="_blank" *ngIf="menuitem.type === 'extTabLink'">
+      <mat-icon>{{ menuitem.icon }}</mat-icon>
+      <span>{{ menuitem.name}}</span>
+      <span fxFlex></span>
+    </a>
+
+    <a class="" appAccordionToggle href="javascript:;" *ngIf="menuitem.type === 'sub'">
+      <mat-icon>{{ menuitem.icon }}</mat-icon>
+      <span>{{ menuitem.name }}</span>
+      <span fxFlex></span>
+      <mat-icon class="dd-icon">keyboard_arrow_down</mat-icon>
+    </a>
+    <mat-nav-list class="sub-item" *ngIf="menuitem.type === 'sub'" >
+      <mat-list-item *ngFor="let firstChildrenItem of menuitem.children; let j=index; let i = firstChildrenItem" routerLinkActive="selected">
+        <a [routerLink]="[menuitem.formName, firstChildrenItem.state ]" *ngIf="firstChildrenItem.type === 'link'"
+           routerLinkActive="selected" (click)="setItemsToLocalStorage(firstChildrenItem.id)"
+           (mouseup)="clicked($event, firstChildrenItem.formName, firstChildrenItem.id)"
+           [matTooltip]="firstChildrenItem.name" matTooltipPosition="above">
+          <mat-icon>{{ firstChildrenItem.icon }}</mat-icon>
+          {{ firstChildrenItem.name}}
+        </a>
+      </mat-list-item>
+
+    </mat-nav-list>
+
+    <div class="saperator text-muted" *ngIf="menuitem.type === 'saperator'">
+      <span>{{ menuitem.name }}</span>
+    </div>
+  </mat-list-item></div>
+</mat-nav-list>

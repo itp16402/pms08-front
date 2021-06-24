@@ -1,0 +1,434 @@
+<div *ngIf="!initialised" class="text-center ml-50-percentage display-content">
+  <mat-spinner></mat-spinner>
+</div>
+
+<mat-card *ngIf="initialised">
+  <div fxLayout="row wrap" class="mt">
+    <div class="page-title mt" fxFlex="60%">
+      {{formTitle?.onoma}}
+      <mat-icon matTooltipPosition="right" *ngIf="formTitle.infos !== null" [matTooltip]="formTitle?.infos">info
+      </mat-icon>
+    </div>
+  </div>
+
+
+  <mat-card-content *ngIf="initialised">
+
+    <fieldset class="fieldset" [disabled]="formGroup.controls.status.value === 'COMPLETED' || !memberCanMakeChangesIntoForm">
+
+      <!-- div for formTile info field -->
+      <div class="mt mb" [id]="formTitle?.keli" [class]="formTitle?.css"
+           *ngIf="formTitle.help !== null">
+        <div fxFlex.gt-sm="100%" [innerHTML]="formTitle.help">
+        </div>
+        <div class="justify-content-end" *ngIf="formTitle.help !== ' '">
+          <button mat-button (click)="removeHelpField(formTitle?.keli)"
+                  *ngIf="formTitle.help !== null">
+            <mat-icon [ngClass]="{'disable': (formGroup.controls.status.value === 'COMPLETED' ||  !memberCanMakeChangesIntoForm)}">
+              clear
+            </mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <div *ngFor="let field of formFieldsList; index as i">
+
+        <div class="mt mb" *ngIf="field?.typos === ''">
+          <div [class]="field.css">
+            {{field?.onoma}}
+          </div>
+        </div>
+
+        <form [formGroup]="formGroup">
+
+          <div class="mt mb" *ngIf="field.typos === 'CHECKBOX'">
+            <!-- Help field -->
+            <div [id]="field.keli" [class]="field.css" *ngIf="field.help !== null">
+              <div fxFlex.gt-sm="100%" [innerHTML]="field.help">
+              </div>
+              <div class="justify-content-end">
+                <button mat-button (click)="removeHelpField(field.keli)">
+                  <mat-icon [ngClass]="{'disable': (formGroup.controls.status.value === 'COMPLETED' ||  !memberCanMakeChangesIntoForm)}">
+                    clear
+                  </mat-icon>
+                </button>
+              </div>
+            </div>
+
+            <div class="mt">
+              <div fxFlex.gt-sm="50%">{{field.onoma}}
+                <mat-icon *ngIf="field.infos !== null" [matTooltip]="field?.infos" matTooltipPosition="right" color="primary">info
+                </mat-icon>
+              </div>
+
+              <mat-checkbox [formControlName]="field.keli" [value]="field.keli"
+                            [ngClass]="{'disable': (formGroup.controls.status.value === 'COMPLETED' ||  !memberCanMakeChangesIntoForm)}"
+                            [checked]="formGroup?.controls[field.keli]?.value === true"
+                            (change)="changeFormControlValue(field, this.formGroup.controls[field.keli].value, $event, field.sprint)">
+              </mat-checkbox>
+            </div>
+
+          </div>
+
+          <div class="mt mb" *ngIf="field.typos === 'MATERIALITY_BASE'">
+            <!-- Help field -->
+            <div [id]="field.keli" [class]="field.css" *ngIf="field.help !== null">
+              <div fxFlex.gt-sm="100%" [innerHTML]="field.help">
+              </div>
+              <div class="justify-content-end">
+                <button mat-button (click)="removeHelpField(field.keli)">
+                  <mat-icon [ngClass]="{'disable': (formGroup.controls.status.value === 'COMPLETED' ||  !memberCanMakeChangesIntoForm)}">
+                    clear
+                  </mat-icon>
+                </button>
+              </div>
+            </div>
+
+            <div class="mt">
+              <div fxFlex.gt-sm="30%" class="required mt">{{field.onoma}}
+                <mat-icon *ngIf="field.infos !== null" [matTooltip]="field?.infos" matTooltipPosition="right" color="primary">info
+                </mat-icon>
+              </div>
+
+              <div fxFlex.gt-sm="30%">
+                <mat-form-field>
+                  <mat-select [formControlName]="field?.keli"
+                              [ngClass]="{'disable': (formGroup.controls.status.value === 'COMPLETED' ||  !memberCanMakeChangesIntoForm)}">
+                    <ng-container *ngFor="let materialityBase of allBases">
+                      <mat-option (click)="setMaterialityBase(materialityBase.id)" [value]="materialityBase.id">{{materialityBase.name}}</mat-option>
+                    </ng-container>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="mb" *ngIf="field.typos === 'RADIO_YES_NO'">
+            <!-- Help field -->
+            <div [id]="field.keli" [class]="field.css" *ngIf="field.help !== null">
+              <div fxFlex.gt-sm="100%" [innerHTML]="field.help">
+              </div>
+              <div class="justify-content-end">
+                <button mat-button (click)="removeHelpField(field.keli)">
+                  <mat-icon [ngClass]="{'disable': (formGroup.controls.status.value === 'COMPLETED' ||  !memberCanMakeChangesIntoForm)}">
+                    clear
+                  </mat-icon>
+                </button>
+              </div>
+            </div>
+
+            <div fxLayout="row" fxLayoutAlign="start center">
+              <!-- Name field -->
+              <div class="mt">
+                {{field.onoma}}
+                <mat-icon *ngIf="field.infos !== null" [matTooltip]="field?.infos" matTooltipPosition="right" color="primary">info</mat-icon>
+              </div>
+              <div *ngIf="field.keli !== ''">
+                <button mat-stroked-button
+                        [ngClass]="{'bg-dark-green': formGroup?.controls[field.keli]?.value === 0,
+                         'disable': (formGroup.controls.status.value === 'COMPLETED' ||  !memberCanMakeChangesIntoForm)}"
+                        class="button-border-radius ml mt"
+                        (click)="changeGroupFieldValue(field, this.formGroup.controls[field.keli].value, formGroup)">
+                  <div *ngIf="this.currentLang === 'el' && formGroup?.controls[field.keli]?.value === 0">Ναι</div>
+                  <div *ngIf="this.currentLang === 'el' && formGroup?.controls[field.keli]?.value === 1">Όχι</div>
+                  <div *ngIf="this.currentLang === 'el' && formGroup?.controls[field.keli]?.value === null">Δ/Α</div>
+                  <div *ngIf="this.currentLang === 'en' && formGroup?.controls[field.keli]?.value === 0">Yes</div>
+                  <div *ngIf="this.currentLang === 'en' && formGroup?.controls[field.keli]?.value === 1">No</div>
+                  <div *ngIf="this.currentLang === 'en' && formGroup?.controls[field.keli]?.value === null">N/A</div>
+                </button>
+              </div>
+            </div>
+
+
+          </div>
+
+          <!-- LEGEND FIELD WITH IMPORT CSS FROM DB -->
+          <div class="mt mb" *ngIf="field.typos === 'LEGEND'">
+            <!-- Help field -->
+            <div [id]="field.keli" [class]="field.css" *ngIf="field.help !== null">
+              <div fxFlex.gt-sm="100%" [innerHTML]="field.help">
+              </div>
+              <div class="justify-content-end">
+                <button mat-button (click)="removeHelpField(field.keli)">
+                  <mat-icon [ngClass]="{'disable': (formGroup.controls.status.value === 'COMPLETED' ||  !memberCanMakeChangesIntoForm)}">
+                    clear
+                  </mat-icon>
+                </button>
+              </div>
+            </div>
+
+            <div [class]="field.css">
+              <div>{{field.onoma}}
+                <mat-icon class="edit" *ngIf="field.infos !== null" [matTooltip]="field?.infos"
+                          matTooltipPosition="right" color="primary">info
+                </mat-icon>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt mb" *ngIf="field.typos === 'TEXT AREA'">
+
+            <!-- Help field -->
+            <div [id]="field.keli" [class]="field.css" *ngIf="field.help !== null">
+              <div fxFlex.gt-sm="100%">{{field.help}}</div>
+              <div class="justify-content-end">
+                <button mat-button (click)="removeHelpField(field.keli)">
+                  <mat-icon [ngClass]="{'disable': (formGroup.controls.status.value === 'COMPLETED' ||  !memberCanMakeChangesIntoForm)}">
+                    clear
+                  </mat-icon>
+                </button>
+              </div>
+            </div>
+
+            <div class="mt" fxLayout="column" fxLayoutAlign="space-around start">
+                <div fxFlex.gt-sm="100%" class="required"
+                     [innerHTML]="field.onoma">
+                </div>
+                <mat-icon *ngIf="field.infos !== null" [matTooltip]="field.infos" matTooltipPosition="right" color="primary">info
+                </mat-icon>
+                <div fxFlex.gt-sm="100%" style="width: 100%">
+                  <mat-form-field>
+                          <textarea type="text" [matTextareaAutosize]="true" matInput class="text-area-custom-css"
+                                    [formControlName]="field?.keli"></textarea>
+                    <mat-error *ngIf="formGroup.controls[field.keli].hasError('required')">Required field</mat-error>
+                  </mat-form-field>
+                </div>
+              </div>
+
+          </div>
+
+          <div class="mt mb" *ngIf="field.typos === 'NUMBER'">
+            <!-- Help field -->
+            <div [id]="field.keli" [class]="field.css" *ngIf="field.help !== null">
+              <div fxFlex.gt-sm="100%" [innerHTML]="field.help">
+              </div>
+              <div class="justify-content-end">
+                <button mat-button (click)="removeHelpField(field.keli)">
+                  <mat-icon [ngClass]="{'disable': (formGroup.controls.status.value === 'COMPLETED' ||  !memberCanMakeChangesIntoForm)}">
+                    clear
+                  </mat-icon>
+                </button>
+              </div>
+            </div>
+
+            <div class="mt">
+              <div fxFlex.gt-sm="30%">{{field.onoma}}
+                <mat-icon *ngIf="field.infos !== null" [matTooltip]="field?.infos" matTooltipPosition="right" color="primary">info
+                </mat-icon>
+              </div>
+
+              <div fxFlex.gt-sm="70%" class="text-bold">
+                {{this.formGroup.controls[field?.keli].value}}
+              </div>
+            </div>
+          </div>
+
+          <!-- add221overall a list -->
+          <div class="mt mb" *ngIf="field.typos === 'MODAL add211overall'">
+
+            <div [class]="field.css">{{field?.onoma}}</div>
+
+            <table class="mt table" *ngIf="add221overallLoaded">
+              <thead class="text-nowrap"> <!-- TABLE HEADERS FOR INTERIM YEAR SELECTION -->
+              <th class="text-center col-4 bg-info">{{tableHeadersAdd221overallFinal[0]}}</th> <!-- header for ECONOMIC LINE DESCRIPTION -->
+              <th class="text-center col-4 bg-info">{{tableHeadersAdd221overallFinal[1]}}</th> <!-- header for BASE PRICE OF INTERMEDIATE -->
+              <th class="text-center col-2 bg-info">{{tableHeadersAdd221overallFinal[2]}}</th> <!-- header for MIN AVAILABLE PRICE -->
+              <th class="text-center col-2 bg-info">{{tableHeadersAdd221overallFinal[3]}}</th> <!-- header for MAX AVAILABLE PRICE -->
+              <th class="text-center col-2 bg-info">{{tableHeadersAdd221overallFinal[4]}}</th> <!-- header for SELECTED AMOUNT -->
+              <th class="text-center col-2 bg-info">{{tableHeadersAdd221overallFinal[5]}}</th> <!-- header for PERCENTAGE -->
+              </thead>
+              <tbody>
+              <ng-container formArrayName="essentialSizeOverallDtoList"
+                            *ngFor="let overallMateriality of formGroup['controls'].essentialSizeOverallDtoList['controls']; index as i">
+                <tr *ngIf="overallMateriality.get('isEditable').value" [formGroupName]="i">
+                  <!-- td for ECONOMIC LINE DESCRIPTION -->
+                  <td>
+                    {{overallMateriality.get('base').value.name}}
+                  </td>
+                  <!-- td for interimBaseAmount -->
+                  <td class="text-right">
+                    {{overallMateriality.get('interimBaseAmount').value}}€
+                  </td>
+                  <td class="text-right">
+                    {{overallMateriality.get('minLimit').value}}€
+                  </td>
+                  <td class="text-right">
+                    {{overallMateriality.get('maxLimit').value}}€
+                  </td>
+                  <td class="text-right">
+                    <div *ngIf="!overallMateriality.get('isEditableA5').value">
+                      <span *ngIf="overallMateriality.get('overAmount').value !== null">{{overallMateriality.get('overAmount').value}}€</span>
+                    </div>
+                    <div fxLayout="row" fxLayoutAlign="end center" *ngIf="overallMateriality.get('isEditableA5').value">
+                        <mat-form-field class="text-right">
+                          <input matInput type="text" formControlName="overAmount">
+                          <mat-error *ngIf="overallMateriality.controls['overAmount'].hasError('max')">{{maxValue + ' ' + overallMateriality.get('maxLimit').value}}</mat-error>
+                          <mat-error *ngIf="overallMateriality.controls['overAmount'].hasError('min')">{{minValue + ' ' + overallMateriality.get('minLimit').value}}</mat-error>
+                        </mat-form-field>
+                        €
+                        <mat-icon class="done" (click)="doneOverallRowA5Field(overallMateriality)"
+                                  [ngClass]="{'disable': overallMateriality.get('overAmount').invalid}">done
+                        </mat-icon>
+                        <mat-icon class="delete" (click)="return(overallMateriality)">clear</mat-icon>
+
+                    </div>
+                  </td>
+                  <td class="text-right">
+                    {{overallMateriality.get('percentage')?.value}}%
+                  </td>
+                </tr>
+                <tr *ngIf="!overallMateriality.get('isEditable').value">
+                  <!-- td for ECONOMIC LINE DESCRIPTION -->
+                  <td>
+                    {{overallMateriality.get('base').value.name}}
+                  </td>
+                  <!-- td for interimBaseAmount -->
+                  <td class="text-right">
+                    {{overallMateriality.get('interimBaseAmount').value}}€
+                  </td>
+                  <td class="text-right">
+                    {{overallMateriality.get('minLimit').value}}€
+                  </td>
+                  <td class="text-right">
+                    {{overallMateriality.get('maxLimit').value}}€
+                  </td>
+                  <td class="text-right">
+                    <div fxLayout="row" fxLayoutAlign="end center">
+                      {{overallMateriality.get('overAmount').value}}
+                      <span *ngIf="overallMateriality.get('overAmount').value !== null">€</span>
+                      <mat-icon class="edit" (click)="editOverallRowA5Field(overallMateriality)"
+                                *ngIf="formGroup.controls.baseId.value === overallMateriality.get('base').value.id"
+                                [ngClass]="{'disable': (formGroup.controls.status.value === 'COMPLETED' ||  !memberCanMakeChangesIntoForm)}">edit
+                      </mat-icon>
+                    </div>
+                  </td>
+                  <td class="text-right">
+                    {{overallMateriality.get('percentage')?.value}}
+                    <span *ngIf="overallMateriality.get('percentage').value !== null">%</span>
+                  </td>
+                </tr>
+              </ng-container>
+              </tbody>
+            </table>
+
+          </div>
+
+          <!-- add221performance list -->
+          <div class="mt mb" *ngIf="field.typos === 'MODAL add211performance'">
+            <div [class]="field.css">{{field?.onoma}}</div>
+
+            <div class="ml-50-percentage" *ngIf="!add221performanceLoaded">
+              <mat-spinner></mat-spinner>
+            </div>
+
+            <table class="table table-responsive mt" *ngIf="add221performanceLoaded">
+              <thead class="text-nowrap">
+              <th class="text-center col-4 bg-info">{{tableHeadersAdd221performance[0]}}</th>
+              <th class="text-center col-4 bg-info">{{tableHeadersAdd221performance[1]}}</th>
+              <th class="text-center col-2 bg-info">{{tableHeadersAdd221performance[2]}}</th>
+              <th class="text-center col-2 bg-info">{{tableHeadersAdd221performance[3]}}</th>
+              <th class="text-center col-2 bg-info">{{tableHeadersAdd221performance[4]}}</th>
+              </thead>
+              <tbody>
+              <ng-container formArrayName="essentialSizePerformanceDtoList"
+                            *ngFor="let performanceMateriality of formGroup['controls'].essentialSizePerformanceDtoList['controls']; index as i">
+                <tr [formGroupName]="i" *ngIf="performanceMateriality.get('isEditable').value">
+                  <td class="text-left">
+                    {{performanceMateriality.get('year').value}}
+                  </td>
+                  <td class="text-right">
+                    {{performanceMateriality.get('overAmount').value}}€
+                  </td>
+                  <td *ngIf="i === 0">
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                      <div fxLayout="column">
+                        <input matInput type="number" formControlName="percentage" >
+                        <mat-error *ngIf="performanceMateriality.controls['percentage'].hasError('required')">Υποχρεωτικό πεδίο</mat-error>
+                        <mat-error *ngIf="performanceMateriality.controls['percentage'].hasError('max')">{{maxValue + ' 80'}}</mat-error>
+                        <mat-error *ngIf="performanceMateriality.controls['percentage'].hasError('min')">{{minValue + ' 50'}}</mat-error>
+                      </div>
+                      <mat-icon class="done" (click)="donePerformancePercentage(performanceMateriality)"
+                                [ngClass]="{'disable': (formGroup.controls.status.value === 'COMPLETED' ||  !memberCanMakeChangesIntoForm ||
+                                                      performanceMateriality.controls['percentage'].hasError('required') ||
+                                                      performanceMateriality.controls['percentage'].hasError('max') ||
+                                                      performanceMateriality.controls['percentage'].hasError('min'))}">
+                        done
+                      </mat-icon>
+                      <mat-icon class="delete" (click)="returnPerformanceGroup(performanceMateriality)">clear</mat-icon>
+                    </div>
+                  </td>
+                  <td class="text-right">
+                    {{performanceMateriality.get('perAmount').value}}€
+                  </td>
+                  <td class="text-right">
+                    {{performanceMateriality.get('taxPerAmount').value}}
+                    <span *ngIf="performanceMateriality.get('taxPerAmount').value !== null">€</span>
+                  </td>
+                </tr>
+                <tr *ngIf="!performanceMateriality.get('isEditable').value">
+                  <td class="text-left">
+                    {{performanceMateriality.get('year').value}}
+                  </td>
+                  <td class="text-right">
+                    {{performanceMateriality.get('overAmount').value}}
+                    <span *ngIf="performanceMateriality.get('overAmount').value !== null">€</span>
+                  </td>
+                  <td class="text-right">
+                    <div fxLayout="row" fxLayoutAlign="end center">
+                      {{performanceMateriality.get('percentage').value}}
+                      <span *ngIf="performanceMateriality.get('percentage').value !== null">%</span>
+                      <mat-icon class="edit" (click)="editPerformanceRow(performanceMateriality)"
+                                *ngIf="performanceMateriality.get('overAmount').value !== null"
+                                [ngClass]="{'disable': (formGroup.controls.status.value === 'COMPLETED' ||  !memberCanMakeChangesIntoForm)}">edit
+                      </mat-icon>
+                    </div>
+                  </td>
+                  <td class="text-right">
+                    {{performanceMateriality.get('perAmount').value}}
+                    <span *ngIf="performanceMateriality.get('perAmount').value !== null">€</span>
+                  </td>
+                  <td class="text-right">
+                    {{performanceMateriality.get('taxPerAmount').value}}
+                    <span *ngIf="performanceMateriality.get('taxPerAmount').value !== null">€</span>
+                  </td>
+                </tr>
+              </ng-container>
+              </tbody>
+            </table>
+          </div>
+
+        </form>
+      </div>
+
+
+    </fieldset>
+
+  </mat-card-content>
+
+  <mat-card-footer>
+    <div fxLayout="row" fxLayoutAlign="end center">
+      <div class="mb mr">
+
+        <button mat-button color="primary" (click)="save()" [disabled]="!memberCanMakeChangesIntoForm"
+                *ngIf="(formGroup?.controls?.status?.value !== 'COMPLETED')">
+          <i class="material-icons">save</i> {{saveButton.onoma}}
+        </button>
+        <button mat-button color="accent" (click)="edit()" [disabled]="!memberCanMakeChangesIntoForm"
+                *ngIf="(formGroup?.controls?.status.value === 'COMPLETED')">
+          <i class="material-icons">edit</i> {{editButton.onoma}}
+        </button>
+        <button mat-button color="warn" (click)="back()">
+          <i class="material-icons">arrow_back</i> {{returnButton.onoma}}
+        </button>
+        <button mat-button color="accent" (click)="complete()" [disabled]="formGroup.invalid || !memberCanMakeChangesIntoForm"
+                *ngIf="(formGroup.controls?.status?.value === null || formGroup.controls?.status?.value === 'PROCESSED' || formGroup.controls?.status?.value === 'SAVED')">
+          <i class="material-icons">done</i> {{completeButton.onoma}}
+        </button>
+
+      </div>
+    </div>
+  </mat-card-footer>
+
+</mat-card>
+

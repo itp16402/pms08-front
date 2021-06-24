@@ -1,0 +1,15 @@
+<div *ngIf="loading">
+  <mat-spinner class="mat-spinner-center"></mat-spinner>
+</div>
+
+<mat-icon *ngIf="!loading" class="custom-dialog-header-icon">report</mat-icon>
+<h2 *ngIf="!loading" mat-dialog-title fxLayout="row" fxLayoutAlign="center center" class="modal-header">
+  {{title}} </h2>
+<mat-dialog-content *ngIf="!loading" class="mat-typography" >
+  <p>{{paragraph}}</p>
+</mat-dialog-content>
+
+<mat-dialog-actions *ngIf="!loading" class="justify-content-end modal-footer">
+  <button mat-button color="warn" (click)="close()"> {{noButton}} </button>
+  <button mat-button color="primary" mat-dialog-close (click)="yes()">{{yesButton}}</button>
+</mat-dialog-actions>

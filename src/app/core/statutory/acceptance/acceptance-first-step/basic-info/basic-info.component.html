@@ -1,0 +1,282 @@
+<div *ngIf="!initialised" class="text-center ml-50-percentage display-content">
+  <mat-spinner></mat-spinner>
+</div>
+
+<mat-card *ngIf="initialised" id="print-body">
+  <div fxLayout="row wrap" class="mt">
+    <div class="page-title mt" fxFlex="60%">
+      {{formTitle?.onoma}}
+      <mat-icon matTooltipPosition="right" *ngIf="formTitle.infos !== null" [matTooltip]="formTitle?.infos" color="primary">info
+      </mat-icon>
+    </div>
+
+  </div>
+
+  <mat-card-content>
+    <fieldset class="fieldset"
+              [disabled]="(formGroup.controls.status.value === 'COMPLETED' || memberCanMakeChangesIntoForm === false)">
+
+      <div fxLayout="row wrap">
+        <div fxFlex.gt-sm="100%" *ngFor="let field of basicInfoFormFields; index as i">
+
+          <form [formGroup]="formGroup"
+                *ngIf="field.typos !== 'TITLE' && field.typos !== 'PDF HELP' && field.typos !== 'VIDEO HELP'">
+
+            <div class="mt mb" *ngIf="field.typos === 'RADIO_ECONOMIC_SITUATION'">
+
+              <div fxFlex.gt-sm="30%">{{field.onoma}}
+                <mat-icon *ngIf="field.infos != null"[matTooltip]="field?.infos" matTooltipPosition="right" color="primary">info</mat-icon>
+              </div>
+
+              <mat-radio-group fxFlex.gt-sm="50%" [formControlName]="field.keli">
+                <mat-radio-button class="custom-label-content"
+                                  [checked]="formGroup?.controls[field.keli]?.value === s.sorder.toString()"
+                                  *ngFor="let s of radioEconomic" [value]="s.sorder">
+                  {{s.onoma}}
+                </mat-radio-button>
+              </mat-radio-group>
+
+            </div>
+
+            <div class="mt mb" *ngIf="field.typos === 'RADIO_ENTITY_TYPE'">
+
+              <div fxFlex.gt-sm="30%">{{field.onoma}}
+                <mat-icon *ngIf="field.infos != null" [matTooltip]="field?.infos" matTooltipPosition="right" color="primary">info</mat-icon>
+              </div>
+
+              <mat-radio-group fxFlex.gt-sm="50%" [formControlName]="field.keli">
+                <mat-radio-button class="custom-label-content" [checked]="formGroup?.controls[field.keli]?.value === s.sorder.toString()"
+                                  *ngFor="let s of radioEntityType" [value]="s.sorder">
+                  {{s.onoma}}
+                </mat-radio-button>
+              </mat-radio-group>
+
+            </div>
+
+            <div class="mt mb" *ngIf="field.typos === 'RADIO_YES_NO'">
+
+              <div fxFlex.gt-sm="30%">{{field.onoma}}
+                <mat-icon *ngIf="field.infos != null" [matTooltip]="field?.infos" matTooltipPosition="right" color="primary">info</mat-icon>
+              </div>
+              <!-- field a20,  0 value for Yes / 1 value for No -->
+              <button mat-stroked-button
+                      [ngClass]="{'bg-dark-green': formGroup?.controls[field.keli]?.value === 1, 'disable': formGroup.controls.status.value === 'COMPLETED', 'disable': memberCanMakeChangesIntoForm === false}"
+                      class="button-border-radius"
+                      (click)="changeGroupFieldValue(field, this.formGroup.controls[field.keli].value, formGroup)">
+                <div *ngIf="this.currentLang === 'el' && formGroup?.controls[field.keli]?.value === 1">Ναι</div>
+                <div *ngIf="this.currentLang === 'el' && (formGroup?.controls[field.keli]?.value === 0 || formGroup?.controls[field.keli]?.value === null)">Όχι</div>
+                <div *ngIf="this.currentLang === 'en' && formGroup?.controls[field.keli]?.value === 1">Yes</div>
+                <div *ngIf="this.currentLang === 'en' && (formGroup?.controls[field.keli]?.value === 0 || formGroup?.controls[field.keli]?.value === null)">No</div>
+              </button>
+
+
+            </div>
+
+            <div class="mt mb" *ngIf="field.typos === 'RADIO_TACTICAL_OTA'">
+
+              <div fxFlex.gt-sm="30%">{{field.onoma}}
+                <mat-icon *ngIf="field.infos != null" [matTooltip]="field?.infos" matTooltipPosition="right" color="primary">info</mat-icon>
+              </div>
+
+              <!-- field a29, 0 value for T / 1 value for OTA -->
+              <button mat-stroked-button
+                      [ngClass]="{'bg-dark-green': formGroup?.controls[field.keli]?.value === 1, 'disable': formGroup.controls.status.value === 'COMPLETED', 'disable': memberCanMakeChangesIntoForm === false}"
+                      class="button-border-radius"
+                      (click)="changeGroupFieldValue(field, this.formGroup.controls[field.keli].value, formGroup)">
+                <div *ngIf="this.currentLang === 'el' && formGroup?.controls[field.keli]?.value === 1">Ναι</div>
+                <div *ngIf="this.currentLang === 'el' && formGroup?.controls[field.keli]?.value === 0">Όχι</div>
+                <div *ngIf="this.currentLang === 'el' && formGroup?.controls[field.keli]?.value === null">Δ/Α</div>
+                <div *ngIf="this.currentLang === 'en' && formGroup?.controls[field.keli]?.value === 1">Yes</div>
+                <div *ngIf="this.currentLang === 'en' && formGroup?.controls[field.keli]?.value === 0 ">No</div>
+                <div *ngIf="this.currentLang === 'en' && formGroup?.controls[field.keli]?.value === null">Ν/Α</div>
+              </button>
+
+            </div>
+
+            <div class="mt mb" *ngIf="field.typos === 'DATE'" >
+
+              <div fxFlex.gt-sm="30%" >{{field.onoma}}
+                <mat-icon *ngIf="field.infos != null" [matTooltip]="field?.infos" matTooltipPosition="right" color="primary">info</mat-icon>
+              </div>
+
+
+              <mat-form-field fxFlex.gt-sm="20%" appearance="outline" >
+                <mat-label>{{field.svalues}}</mat-label>
+                <input matInput [matDatepicker]="picker" [formControlName]="field.keli">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+              </mat-form-field>
+            </div>
+
+            <div class="mt mb" *ngIf="field.typos === 'TEXT'">
+
+              <div fxFlex.gt-sm="30%">{{field.onoma}}
+                <mat-icon *ngIf="field.infos != null" [matTooltip]="field?.infos" matTooltipPosition="right" color="primary">info</mat-icon>
+              </div>
+
+              <div fxFlex.gt-sm="30%">
+                <mat-form-field >
+                  <input class="mat-card" type="text" matInput [formControlName]="field?.keli">
+                </mat-form-field>
+                <div *ngIf="field.keli === 'hours'">
+                  <mat-error *ngIf="formGroup.controls[field.keli].hasError('required')">Required field</mat-error>
+                  <mat-error *ngIf="formGroup.controls[field.keli].hasError('max')">The value is greater than the maximum</mat-error>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="mt mb" *ngIf="field.typos === 'TEXT AREA'">
+
+              <div *ngIf="formGroup.controls[field.keli]?.value !== null">
+                <!-- Help field -->
+                <div [id]="field.keli" [class]="field.css" *ngIf="field.help !== null">
+                  <div fxFlex.gt-sm="100%">{{field.help}}</div>
+                  <div class="justify-content-end">
+                    <button mat-button (click)="removeHelpField(field.keli)">
+                      <mat-icon [ngClass]="{'disable': formGroup.controls.status.value === 'COMPLETED', 'disable': memberCanMakeChangesIntoForm === false}">
+                        clear
+                      </mat-icon>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="mt" fxLayout="column" fxLayoutAlign="space-around start">
+                  <div fxFlex.gt-sm="100%" class="required" >
+                    {{field.onoma}}<mat-icon *ngIf="field.infos !== null" [matTooltip]="field.infos" matTooltipPosition="right" color="primary">info
+                  </mat-icon>
+                  </div>
+                  <div fxFlex.gt-sm="100%" style="width: 100%">
+                    <mat-form-field>
+                    <textarea type="text" [matTextareaAutosize]="true" matInput class="text-area-custom-css"
+                              [formControlName]="field?.keli"></textarea>
+                      <mat-error *ngIf="formGroup.controls[field.keli].hasError('required')">Required field</mat-error>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="field.typos === 'NUMBER'">
+              <!-- Help field -->
+              <div class="row" [id]="field.svalues" *ngIf="field.help !== null" [class]="field?.css">
+                <div fxFlex.gt-sm="100%" [innerHTML]="field.help"></div>
+                <div class="justify-content-end">
+                  <button mat-button (click)="removeHelpField(field.svalues)">
+                    <mat-icon [ngClass]="{'disable': formGroup.controls.status.value === 'COMPLETED', 'disable': memberCanMakeChangesIntoForm === false}">
+                      clear
+                    </mat-icon>
+                  </button>
+                </div>
+              </div>
+
+              <div class="mt">
+                <!-- Name field -->
+                <div fxFlex.gt-sm="30%" >
+                  {{field.onoma}}<mat-icon *ngIf="field.infos !== null" [matTooltip]="field.infos" matTooltipPosition="right" color="primary">info
+                </mat-icon>
+                </div>
+                <div fxFlex.gt-sm="30%" *ngIf="field.keli !== ''">
+                  <mat-form-field>
+                    <input class="mat-card" type="number" matInput [formControlName]="field?.keli">
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt mb" *ngIf="field.typos === 'SOLON API NAME'">
+
+              <div fxFlex.gt-sm="30%">{{field.onoma}}
+                <mat-icon *ngIf="field.infos != null" [matTooltip]="field?.infos" matTooltipPosition="right" color="primary">info</mat-icon>
+              </div>
+
+              <div fxFlex.gt-sm="30%">
+                {{projectResponseDtoModel.customerName}}
+              </div>
+
+            </div>
+
+            <div class="mt mb" *ngIf="field.typos === 'SOLON API AFM'">
+
+              <div fxFlex.gt-sm="30%">{{field.onoma}}
+                <mat-icon *ngIf="field.infos != null" [matTooltip]="field?.infos" matTooltipPosition="right" color="primary">info</mat-icon>
+              </div>
+
+              <div fxFlex.gt-sm="30%">
+                {{projectResponseDtoModel.customerAfm}}
+              </div>
+
+            </div>
+
+
+            <!-- LEGEND FIELD WITH IMPORT CSS FROM DB -->
+            <div class="mt mb" *ngIf="field.typos === 'LEGEND'">
+              <!-- Help field -->
+              <div [id]="field.keli" [class]="field.css" *ngIf="field.help !== null">
+                <div fxFlex.gt-sm="100%" [innerHTML]="field.help">
+                </div>
+                <div class="justify-content-end">
+                  <button mat-button (click)="removeHelpField(field.keli)">
+                    <mat-icon [ngClass]="{'disable': formGroup.controls.status.value === 'COMPLETED', 'disable': memberCanMakeChangesIntoForm === false}">
+                      clear
+                    </mat-icon>
+                  </button>
+                </div>
+              </div>
+
+              <div [class]="field.css">
+                <div>{{field.onoma}}
+                  <mat-icon class="edit" *ngIf="field.infos !== null" [matTooltip]="field?.infos"
+                            matTooltipPosition="right" color="primary">info
+                  </mat-icon>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt mb" *ngIf="field.typos === 'SOLON API HOURS'">
+
+              <div fxFlex.gt-sm="30%">{{field.onoma}}
+                <mat-icon *ngIf="field.infos != null" [matTooltip]="field?.infos" matTooltipPosition="right" color="primary">info</mat-icon>
+              </div>
+
+              <div fxFlex.gt-sm="30%">
+                <mat-form-field >
+                  <input class="mat-card" matInput [formControlName]="field?.keli">
+                </mat-form-field>
+              </div>
+
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+    </fieldset>
+  </mat-card-content>
+
+  <mat-card-footer>
+    <div fxLayout="row" fxLayoutAlign="end center">
+      <div class="mb mr" >
+
+        <button mat-button color="primary" (click)="save()" [disabled]="memberCanMakeChangesIntoForm === false"
+                *ngIf="(formGroup.controls.status.value !== 'COMPLETED')">
+          <i class="material-icons">save</i> {{saveButton.onoma}}
+        </button>
+        <button mat-button color="accent" (click)="edit()" [disabled]="memberCanMakeChangesIntoForm === false"
+                *ngIf="(formGroup.controls.status.value === 'COMPLETED')">
+          <i class="material-icons">edit</i> {{editButton.onoma}}
+        </button>
+        <button mat-button color="warn" (click)="back()">
+          <i class="material-icons">arrow_back</i> {{returnButton.onoma}}
+        </button>
+        <button mat-button color="accent" (click)="complete()" [disabled]="memberCanMakeChangesIntoForm === false"
+                *ngIf="(formGroup.controls.status.value === null || formGroup.controls.status.value === 'PROCESSED' || formGroup.controls.status.value === 'SAVED')">
+          <i class="material-icons">done</i> {{completeButton.onoma}}
+        </button>
+
+      </div>
+    </div>
+  </mat-card-footer>
+
+</mat-card>
+
