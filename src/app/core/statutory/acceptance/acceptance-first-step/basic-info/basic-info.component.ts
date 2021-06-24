@@ -210,7 +210,7 @@ export class BasicInfoComponent implements OnInit, AfterViewInit {
     if (!this.loadingFormList && this.selectedForm.id != null) {
       this.formGroup.controls.status.setValue('COMPLETED');
       this.basicInfoControllerService.saveBasicInfoByProjectId(this.formGroup.value, this.projectId, this.selectedForm.id).subscribe(res => {
-        this.router.navigate([this.currentLang, 'home', this.projectId, 'statutory', 'acceptance', 'acceptance-second-step']);
+        this.router.navigate([this.currentLang, 'home', this.projectId, 'statutory', 'acceptance', 'acceptance-second-step', '1', 'a121']);
       });
     }
   }
