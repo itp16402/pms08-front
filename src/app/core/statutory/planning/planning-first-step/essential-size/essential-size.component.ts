@@ -242,7 +242,9 @@ export class EssentialSizeComponent implements OnInit, AfterViewInit {
   initialize(): any {
     this.createForm();
     if (this.essentialSizeModel !== null) {
-      this.formGroup.controls.baseId.patchValue(this.essentialSizeModel.base.id);
+      if (this.essentialSizeModel.base.id) {
+        this.formGroup.controls.baseId.patchValue(this.essentialSizeModel.base.id);
+      }
       this.formGroup.controls.documentationBase.patchValue(this.essentialSizeModel.documentationBase);
       this.formGroup.controls.overAmount.patchValue(this.essentialSizeModel.overAmount);
       this.formGroup.controls.taxOverAmount.patchValue(this.essentialSizeModel.taxOverAmount);
