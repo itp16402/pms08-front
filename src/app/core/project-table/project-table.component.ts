@@ -110,8 +110,7 @@ export class ProjectTableComponent implements OnInit, AfterViewInit {
 
   getFormsTable(currentLang: any): any {
     this.formService.findAllTableNames(currentLang).subscribe(res => {
-      this.formsFields = res;
-      console.log(this.formsFields);
+      this.formsFields = res;     
     });
   }
 
