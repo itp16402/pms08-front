@@ -95,11 +95,6 @@ export class LoginComponent implements OnInit {
         this.registerButton = row;
       }
     });
-
-    console.log(this.loginButton);
-    console.log(this.usernamePlaceHolder);
-    console.log(this.passwordPlaceHolder);
-    console.log(this.registerText);
   }
 
 }
