@@ -319,8 +319,7 @@ export class EssentialSizeComponent implements OnInit, AfterViewInit {
       sentEssentialSizeDto.taxOverAmount = taxOverAmount;
       sentEssentialSizeDto.essentialSizeOverallDtoList = [];
       sentEssentialSizeDto.essentialSizePerformanceDtoList = [];
-      console.log(sentEssentialSizeDto);
-
+     
       if (this.formList.id != null) {
         this.essentialSizeControllerService.saveEssentialSize(this.projectId, this.formList.id, sentEssentialSizeDto)
           .subscribe((res: any) => {
@@ -591,8 +590,7 @@ export class EssentialSizeComponent implements OnInit, AfterViewInit {
       sentEssentialSizeDto.taxOverAmount = taxOverAmount;
       sentEssentialSizeDto.essentialSizeOverallDtoList = [];
       sentEssentialSizeDto.essentialSizePerformanceDtoList = [];
-      console.log(sentEssentialSizeDto);
-
+     
       if (this.formList.id != null) {
         this.essentialSizeControllerService.saveEssentialSize(this.projectId, this.formList.id, sentEssentialSizeDto)
           .subscribe((res: any) => {
