@@ -128,7 +128,6 @@ export class OpenFormFieldsComponent implements OnInit {
 
   saveField(field: any): any {
     this.adminControllerService.saveFormNames(field.value).subscribe(res => {
-      console.log(res);
       this.getData();
     });
   }
