@@ -5,7 +5,7 @@
       <mat-card-content (click)="setTableNameToLocalStorage(responseTitlesList[i])" [routerLink]="[responseTitlesList[i].tableName]"
                         (mouseup)="clicked($event, responseTitlesList[i])"
                         [ngClass]="
-                    {
+                    {'bg-gray-with-disable': table.disabled,
                     'bg-danger': (table.status === null),
                     'bg-success': (table.status === 'COMPLETED'),
                     'bg-warning': ((table.status === 'SAVED') || (table.status === 'PROCESSED'))
@@ -20,16 +20,18 @@
           <div class="m-r-10 ml-auto no-shrink">
             <button mat-fab mat-card-icon class="shadow-none"
                     [ngClass]="
-                    {
+                    {'bg-gray-with-disable': table.disabled,
                     'bg-danger': (table.status === null),
                     'bg-success': (table.status === 'COMPLETED'),
                     'bg-warning': ((table.status === 'SAVED') || (table.status === 'PROCESSED'))
                     }"
                     (click)="setTableNameToLocalStorage(responseTitlesList[i])" [routerLink]="[responseTitlesList[i].tableName]"
                     (mouseup)="clicked($event, responseTitlesList[i])">
-              <mat-icon *ngIf="table.status === 'COMPLETED'">check_circle_outline</mat-icon>
-              <mat-icon *ngIf="table.status === null">input</mat-icon>
-              <mat-icon *ngIf="(table.status === 'SAVED') || (table.status === 'PROCESSED')">create</mat-icon>
+              <mat-icon *ngIf="table.disabled" class="color-white">not_interested</mat-icon>
+              <mat-icon *ngIf="table.status === 'COMPLETED' && !table.disabled" [ngClass]="{'bg-success': (table.status === 'COMPLETED')}">check_circle_outline</mat-icon>
+              <mat-icon *ngIf="table.status === null && !table.disabled" [ngClass]="{'bg-danger': ( table.status === null)}">input</mat-icon>
+              <mat-icon *ngIf="((table.status === 'SAVED') || (table.status === 'PROCESSED')) && !table.disabled"
+                        [ngClass]="{'bg-warning': (table.status === 'SAVED') || (table.status === 'PROCESSED')}">create</mat-icon>
             </button>
           </div>
           <!-- column -->
