@@ -231,7 +231,7 @@ export class EssentialSizeComponent implements OnInit, AfterViewInit {
       documentationBase: new FormControl(null, Validators.required),
       documentationPerformance: new FormControl(null),
       overAmount: new FormControl(null),
-      taxOverAmount: new FormControl('', Validators.required),
+      taxOverAmount: new FormControl(''),
       essentialSizeOverallDtoList: this.fb.array([]),
       essentialSizePerformanceDtoList: this.fb.array([]),
       id: new FormControl(null),
@@ -313,13 +313,13 @@ export class EssentialSizeComponent implements OnInit, AfterViewInit {
       const sentEssentialSizeDto: EssentialSizeDtoModel = Object.create(null);
       sentEssentialSizeDto.id = this.formGroup.controls.id.value;
       sentEssentialSizeDto.status = this.formGroup.controls.status.value;
-      sentEssentialSizeDto.base = this.formGroup.controls.base.value;
+      sentEssentialSizeDto.baseId = this.formGroup.controls.baseId.value;
       sentEssentialSizeDto.documentationBase = this.formGroup.controls.documentationBase.value;
       sentEssentialSizeDto.overAmount = overAmount;
       sentEssentialSizeDto.taxOverAmount = taxOverAmount;
       sentEssentialSizeDto.essentialSizeOverallDtoList = [];
       sentEssentialSizeDto.essentialSizePerformanceDtoList = [];
-     
+
       if (this.formList.id != null) {
         this.essentialSizeControllerService.saveEssentialSize(this.projectId, this.formList.id, sentEssentialSizeDto)
           .subscribe((res: any) => {
@@ -349,7 +349,7 @@ export class EssentialSizeComponent implements OnInit, AfterViewInit {
       const sentEssentialSizeDto: EssentialSizeDtoModel = Object.create(null);
       sentEssentialSizeDto.id = this.formGroup.controls.id.value;
       sentEssentialSizeDto.status = this.formGroup.controls.status.value;
-      sentEssentialSizeDto.base = this.formGroup.controls.base.value;
+      sentEssentialSizeDto.baseId = this.formGroup.controls.baseId.value;
       sentEssentialSizeDto.documentationBase = this.formGroup.controls.documentationBase.value;
       sentEssentialSizeDto.overAmount = overAmount;
       sentEssentialSizeDto.taxOverAmount = taxOverAmount;
@@ -390,7 +390,7 @@ export class EssentialSizeComponent implements OnInit, AfterViewInit {
         const sentEssentialSizeDto: EssentialSizeDtoModel = Object.create(null);
         sentEssentialSizeDto.id = this.formGroup.controls.id.value;
         sentEssentialSizeDto.status = this.formGroup.controls.status.value;
-        sentEssentialSizeDto.base = this.formGroup.controls.base.value;
+        sentEssentialSizeDto.baseId = this.formGroup.controls.baseId.value;
         sentEssentialSizeDto.documentationBase = this.formGroup.controls.documentationBase.value;
         sentEssentialSizeDto.overAmount = overAmount;
         sentEssentialSizeDto.taxOverAmount = taxOverAmount;
@@ -590,7 +590,7 @@ export class EssentialSizeComponent implements OnInit, AfterViewInit {
       sentEssentialSizeDto.taxOverAmount = taxOverAmount;
       sentEssentialSizeDto.essentialSizeOverallDtoList = [];
       sentEssentialSizeDto.essentialSizePerformanceDtoList = [];
-     
+
       if (this.formList.id != null) {
         this.essentialSizeControllerService.saveEssentialSize(this.projectId, this.formList.id, sentEssentialSizeDto)
           .subscribe((res: any) => {
