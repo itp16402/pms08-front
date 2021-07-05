@@ -5,7 +5,8 @@ import {BaseDtoModel} from './base-dto.model';
 
 export interface EssentialSizeDtoModel{
   id: number;
-  base: BaseDtoModel;
+  base: any;
+  baseId: any;
   documentationBase: string;
   overAmount: number;
   taxOverAmount: number;

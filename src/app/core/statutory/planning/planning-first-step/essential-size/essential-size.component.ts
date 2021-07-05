@@ -84,7 +84,7 @@ export class EssentialSizeComponent implements OnInit, AfterViewInit {
               private activatedRoute: ActivatedRoute,
               private router: Router,
               private cdf: ChangeDetectorRef,
-              private essentialSizeControllerService: EssentialSizeControllerService,) {
+              private essentialSizeControllerService: EssentialSizeControllerService) {
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
   }
 
