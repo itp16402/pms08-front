@@ -23,6 +23,7 @@ export class ProjectTableComponent implements OnInit, AfterViewInit {
   currentUser: any;
   tableName = 'HOME'; // we are at HOME table from db
   formViewFields: FormViewModel[] = [];
+  projectTableFields: FormViewModel[] = [];
 
   noDataMessage: any;
   loading = true;
@@ -32,6 +33,8 @@ export class ProjectTableComponent implements OnInit, AfterViewInit {
   /** table with form array from table forms */
   formsFields: FormViewModel[] = [];
   formHeader = new FormViewModel();
+
+  loggedInUser: UserDtoModel = Object.create(null);
 
   constructor(private router: Router,
               private activatedRoute: ActivatedRoute,
@@ -48,7 +51,6 @@ export class ProjectTableComponent implements OnInit, AfterViewInit {
     this.currentLang =  this.router.url.split('/')[1];
     this.currentUser = localStorage.getItem('currentUser');
     this.getFormFields();
-    this.getData(this.currentUser);
     this.setMemberId(this.currentUser);
     this.onInitCheckLang(this.currentLang);
   }
@@ -69,6 +71,7 @@ export class ProjectTableComponent implements OnInit, AfterViewInit {
     homeFormList.forEach(res => {
       if (res.typos === 'PROJECT HEADERS') {
         this.displayedColumns.push(res.keli);
+        this.projectTableFields.push(res);
       }
       if (res.typos === 'FORMS HEADER') {
         this.formHeader = res;
@@ -84,8 +87,16 @@ export class ProjectTableComponent implements OnInit, AfterViewInit {
     const currentUserName = currentUser.slice(1, -1);
     this.userControllerService.fetchUserByUsername(currentUserName).subscribe((res: UserDtoModel) => {
       if (res !== null) {
+        this.loggedInUser = res;
+        if (this.loggedInUser.authorities !== 'ROLE_ADMIN') {
+          this.getData(this.currentUser);
+        }
+        if (this.loggedInUser.authorities === 'ROLE_ADMIN') {
+          this.getFormsTable(this.currentLang);
+        }
         // @ts-ignore
         localStorage.setItem('memberId', res.id.toString());
+        localStorage.setItem('userEmail', res.email);
       }
     });
   }
@@ -102,15 +113,12 @@ export class ProjectTableComponent implements OnInit, AfterViewInit {
     this.projectControllerService.findProjectsByMemberUsername(userName).subscribe(res => {
       this.projects = res;
       this.loading = false;
-      if (this.projects[0] === null) {
-        this.getFormsTable(this.currentLang);
-      }
     });
   }
 
   getFormsTable(currentLang: any): any {
     this.formService.findAllTableNames(currentLang).subscribe(res => {
-      this.formsFields = res;     
+      this.formsFields = res;
     });
   }
 

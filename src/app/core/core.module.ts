@@ -30,6 +30,8 @@ import { RegisterComponent } from './register/register.component';
 import { PlanningSecondStepComponent } from './statutory/planning/planning-second-step/planning-second-step.component';
 import { ImportantAccountsComponent } from './statutory/planning/planning-second-step/important-accounts/important-accounts.component';
 import { OpenFormFieldsComponent } from './open-form-fields/open-form-fields.component';
+import { RegisterDialogComponent } from './register/register-dialog/register-dialog.component';
+import { CompleteModalComponent } from './statutory/planning/planning-second-step/important-accounts/complete-modal/complete-modal.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true,
@@ -59,6 +61,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     PlanningSecondStepComponent,
     ImportantAccountsComponent,
     OpenFormFieldsComponent,
+    RegisterDialogComponent,
+    CompleteModalComponent,
   ],
     imports: [
         CommonModule,

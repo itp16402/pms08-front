@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
-import {Router} from "@angular/router";
-import {CustomValidators} from "ngx-custom-validators";
-import {LoginService} from "../../shared/Injectables/services/login.service";
-import {FormViewModel} from "../../shared/models/general-form-view-models/form-view.model";
-import {FormService} from "../../shared/Injectables/services/form.service";
+import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {Router} from '@angular/router';
+import {CustomValidators} from 'ngx-custom-validators';
+import {LoginService} from '../../shared/Injectables/services/login.service';
+import {FormViewModel} from '../../shared/models/general-form-view-models/form-view.model';
+import {FormService} from '../../shared/Injectables/services/form.service';
+import {MatDialog} from '@angular/material/dialog';
+import {RegisterDialogComponent} from './register-dialog/register-dialog.component';
+import {MailService} from '../../shared/Injectables/services/mail.service';
 
 
 const password = new FormControl('', Validators.required);
@@ -49,28 +52,60 @@ export class RegisterComponent implements OnInit {
   loginButton = new FormViewModel();
 
   constructor(private fb: FormBuilder,
+              public dialog: MatDialog,
               private formService: FormService,
               private loginService: LoginService,
+              private mailService: MailService,
               private router: Router) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.currentLang =  this.router.url.split('/')[1];
     this.form = this.fb.group({
       // @ts-ignore
       email: [null, Validators.compose([Validators.required, CustomValidators.email])],
-      username: username,
-      firstName: firstName,
-      lastName: lastName,
-      password: password,
-      confirmPassword: confirmPassword
+      username,
+      firstName,
+      lastName,
+      password,
+      confirmPassword
     });
     this.getFormFields();
   }
 
-  onSubmit() {
+  onSubmit(): any {
     this.loginService.register(this.form.value).subscribe( res => {
       if (res === null){
-            this.router.navigate(['el/login']);
+        this.openRegisterDialog(this.form.value);
+      }
+    });
+  }
+
+  openRegisterDialog(formValue: any): any {
+    const dialogRef = this.dialog.open(RegisterDialogComponent, {
+      width: 'fit-content',
+      height: 'fit-content',
+      data: {
+        email: formValue.email
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 'Yes') {
+        this.sendMail(formValue);
+      }
+    });
+  }
+
+  sendMail(formValue: any): any{
+    const mailBody = Object.create(null);
+    mailBody.from = 'itp16402@hua.gr';
+    mailBody.subject = 'Επιτυχής Εγγραφή';
+    mailBody.text = 'Η εγγραφή για τον χρήστη με όνομα ' + formValue.firstName + ' επίθετο ' + formValue.lastName + ' έγινε με επιτυχία. Με username ' +
+      formValue.username;
+    mailBody.to = formValue.email;
+    this.mailService.sendMail(mailBody).subscribe(res => {
+      if (res === null) {
+        this.router.navigate(['el/login']);
       }
     });
   }

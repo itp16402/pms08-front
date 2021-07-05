@@ -20,6 +20,11 @@ export class UserControllerService {
 
   getAllUsers(username: string): Observable<UserDtoModel[]> {
     const currentUserName = username.slice(1, -1);
-    return this.http.get<UserDtoModel[]>(this.baseUrl + 'users/all/' + currentUserName)
+    return this.http.get<UserDtoModel[]>(this.baseUrl + 'users/all/' + currentUserName);
+  }
+
+  searchMemberByLastName(lastName: any, username: string): Observable<UserDtoModel[]> {
+    const currentUserName = username.slice(1, -1);
+    return this.http.get<UserDtoModel[]>(this.baseUrl + 'users/search/' + currentUserName + '/' + lastName);
   }
 }

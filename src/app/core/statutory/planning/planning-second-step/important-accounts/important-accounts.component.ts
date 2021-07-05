@@ -1,15 +1,17 @@
 import {AfterViewInit, ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {EditAcceptanceComponent} from "../../../../../shared/shared-componets/edit-acceptance/edit-acceptance.component";
-import {FormArray, FormBuilder, FormControl, FormGroup} from "@angular/forms";
-import {FormListDtoModel} from "../../../../../shared/models/general-form-view-models/form-list-dto.model";
-import {FormListControllerService} from "../../../../../shared/Injectables/services/form-list-controller.service";
-import {FormRoleControllerService} from "../../../../../shared/Injectables/services/form-role-controller.service";
-import {ImportantAccountControllerService} from "../../../../../shared/Injectables/services/planning/step-2-service/important-account-controller.service";
-import {ActivatedRoute, Router} from "@angular/router";
-import {MatDialog} from "@angular/material/dialog";
-import {FormService} from "../../../../../shared/Injectables/services/form.service";
-import {FormViewModel} from "../../../../../shared/models/general-form-view-models/form-view.model";
-import {ImportantAccountDto} from "../../../../../shared/models/planning/important-account-221/important-account-dto";
+import {EditAcceptanceComponent} from '../../../../../shared/shared-componets/edit-acceptance/edit-acceptance.component';
+import {FormArray, FormBuilder, FormControl, FormGroup} from '@angular/forms';
+import {FormListDtoModel} from '../../../../../shared/models/general-form-view-models/form-list-dto.model';
+import {FormListControllerService} from '../../../../../shared/Injectables/services/form-list-controller.service';
+import {FormRoleControllerService} from '../../../../../shared/Injectables/services/form-role-controller.service';
+import {ImportantAccountControllerService} from '../../../../../shared/Injectables/services/planning/step-2-service/important-account-controller.service';
+import {ActivatedRoute, Router} from '@angular/router';
+import {MatDialog} from '@angular/material/dialog';
+import {FormService} from '../../../../../shared/Injectables/services/form.service';
+import {FormViewModel} from '../../../../../shared/models/general-form-view-models/form-view.model';
+import {ImportantAccountDto} from '../../../../../shared/models/planning/important-account-221/important-account-dto';
+import {MailService} from '../../../../../shared/Injectables/services/mail.service';
+import {CompleteModalComponent} from './complete-modal/complete-modal.component';
 
 @Component({
   selector: 'app-important-accounts',
@@ -29,8 +31,6 @@ export class ImportantAccountsComponent implements OnInit, AfterViewInit {
 
   /** parameters for display the header, info, help, video and pdf information */
   formTitle = new FormViewModel();
-  videoTitle: any;
-  pdfTitle: any;
 
   /** parameters for buttons */
   saveButton = new FormViewModel();
@@ -62,6 +62,7 @@ export class ImportantAccountsComponent implements OnInit, AfterViewInit {
   /** PARAMETERS IN ORDER TO CHECK MEMBER ROLE */
   memberId: any;
   memberCanMakeChangesIntoForm = false;
+  userEmail: any;
 
   constructor(private formListControllerService: FormListControllerService,
               private formRoleControllerService: FormRoleControllerService,
@@ -70,6 +71,7 @@ export class ImportantAccountsComponent implements OnInit, AfterViewInit {
               public dialog: MatDialog,
               private activatedRoute: ActivatedRoute,
               private router: Router,
+              private mailService: MailService,
               private cdf: ChangeDetectorRef,
               private importantAccountControllerService: ImportantAccountControllerService) {
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
@@ -79,6 +81,7 @@ export class ImportantAccountsComponent implements OnInit, AfterViewInit {
     this.currentLang =  this.router.url.split('/')[1];
     this.orderId = Number(this.router.url.split('/')[3]);
     this.memberId = localStorage.getItem('memberId');
+    this.userEmail = localStorage.getItem('userEmail');
     this.selectedTable = this.activatedRoute.snapshot.params.tableName;
     this.getButtons();
     this.getFormFields();
@@ -185,10 +188,10 @@ export class ImportantAccountsComponent implements OnInit, AfterViewInit {
     });
 
     if (this.importantAccountDto !== null && this.loadImportantAccountDto) {
-      this.formGroup.controls.id.patchValue(this.importantAccountDto.id);
-      this.formGroup.controls.status.patchValue(this.importantAccountDto.status);
-      if (this.importantAccountDto.importantAccountAddDtoList.length !== 0) {
-        this.importantAccountDto.importantAccountAddDtoList.forEach(account => {
+      this.formGroup.controls.id.patchValue(this.importantAccountDto?.id);
+      this.formGroup.controls.status.patchValue(this.importantAccountDto?.status);
+      if (this.importantAccountDto?.importantAccountAddDtoList?.length !== 0) {
+        this.importantAccountDto?.importantAccountAddDtoList?.forEach(account => {
           const accountFormGroup = this.createImportantAccountAddFormGroup();
           accountFormGroup.patchValue(account);
           accountFormGroup.controls.isEditable.patchValue(false);
@@ -238,12 +241,21 @@ export class ImportantAccountsComponent implements OnInit, AfterViewInit {
 
   complete(): void {
     if (!this.loadingFormList && this.formList.id != null) {
-      this.formGroup.controls.status.setValue('COMPLETED');
-      this.importantAccountControllerService.saveImportantAccount(this.orderId, this.formList.id, this.formGroup.value)
-        .subscribe(res => {
-          this.router.navigate([this.currentLang, 'home', this.orderId, 'statutory', 'planning', 'planning-second-step']);
-        });
+      this.completeModal();
     }
+  }
+
+  completeModal(): any {
+    const dialogRef = this.dialog.open(CompleteModalComponent, {
+      width: 'fit-content',
+      height: 'fit-content'
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 'Yes') {
+        this.sendMail(this.orderId);
+      }
+    });
+
   }
 
   edit(): void {
@@ -359,4 +371,24 @@ export class ImportantAccountsComponent implements OnInit, AfterViewInit {
       }
     }
   }
+
+  sendMail(orderId: any): any{
+    const mailBody = Object.create(null);
+    mailBody.from = 'itp16402@hua.gr';
+    mailBody.subject = 'Ολοκλήρωση Εργασίας';
+    mailBody.text = 'Η εργασία με αριθμό ' + orderId + ' ολοκληρώθηκε επιτυχώς';
+    mailBody.to = this.userEmail;
+    this.mailService.sendMail(mailBody).subscribe(res => {
+      if (res === null) {
+        this.formGroup.controls.status.setValue('COMPLETED');
+        this.importantAccountControllerService.saveImportantAccount(this.orderId, this.formList.id, this.formGroup.value)
+          .subscribe(response => {
+            if (response === null) {
+              this.router.navigate([this.currentLang, 'home', this.orderId, 'statutory', 'planning', 'planning-second-step']);
+            }
+          });
+      }
+    });
+  }
+
 }

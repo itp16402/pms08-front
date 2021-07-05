@@ -107,7 +107,8 @@
           </div>
 
           <div fxLayout="column" fxLayoutAlign="space-evenly none" [ngClass]="{'disable': formGroup.controls.status.value === 'COMPLETED', 'disable': memberCanMakeChangesIntoForm === false}">
-            <mat-form-field *ngIf="isAdmin" [ngClass]="{'disable': formGroup.controls.status.value === 'COMPLETED', 'disable': memberCanMakeChangesIntoForm === false}">
+            <mat-form-field class="custom-width"
+              *ngIf="isAdmin" [ngClass]="{'disable': formGroup.controls.status.value === 'COMPLETED', 'disable': memberCanMakeChangesIntoForm === false}">
               <input matInput #memberInput [placeholder]="searchPlaceHolder" [formControl]="memberCtrl"
                      [ngClass]="{'disable': formGroup.controls.status.value === 'COMPLETED', 'disable': memberCanMakeChangesIntoForm === false}"
                      [matAutocomplete]="auto">
@@ -118,6 +119,9 @@
                 <ng-container *ngIf="!isLoading">
                   <mat-option *ngFor="let member of filteredMembers" [value]="member">
                     <span>{{member.lastName + ' ' + member.firstName}}</span>
+                  </mat-option>
+                  <mat-option *ngIf="filteredMembers.length === 0" >
+                    <span>Δεν υπάρχουν μέλη με επώνυμο: {{this.memberCtrl.value}}</span>
                   </mat-option>
                 </ng-container>
               </mat-autocomplete>
@@ -155,7 +159,8 @@
           </div>
 
           <div fxLayout="column" fxLayoutAlign="space-evenly none" [ngClass]="{'disable': formGroup.controls.status.value === 'COMPLETED', 'disable': memberCanMakeChangesIntoForm === false}">
-            <mat-form-field *ngIf="isAdmin && eqcrList.length >= 0" [ngClass]="{'disable': formGroup.controls.status.value === 'COMPLETED', 'disable': memberCanMakeChangesIntoForm === false}">
+            <mat-form-field class="custom-width"
+                            *ngIf="isAdmin && eqcrList.length >= 0" [ngClass]="{'disable': formGroup.controls.status.value === 'COMPLETED', 'disable': memberCanMakeChangesIntoForm === false}">
               <input matInput #eqcrInput [placeholder]="searchEqcrPlaceHolder" [formControl]="eqcrCtrl"
                      [ngClass]="{'disable': formGroup.controls.status.value === 'COMPLETED', 'disable': memberCanMakeChangesIntoForm === false}"
                      [matAutocomplete]="auto">
@@ -166,6 +171,9 @@
                 <ng-container *ngIf="!isLoading">
                   <mat-option *ngFor="let member of filteredMembers" [value]="member">
                     <span>{{member.lastName + ' ' + member.firstName}}</span>
+                  </mat-option>
+                  <mat-option *ngIf="filteredMembers.length === 0" >
+                    <span>Δεν υπάρχει μέλος με επώνυμο: {{this.eqcrCtrl.value}}</span>
                   </mat-option>
                 </ng-container>
               </mat-autocomplete>

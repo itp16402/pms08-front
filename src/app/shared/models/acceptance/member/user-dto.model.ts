@@ -4,7 +4,7 @@ export interface UserDtoModel {
   lastName?: string;
   username?: string;
   password?: string;
-  email?: string;
+  email?: any;
   active?: boolean;
   authorities?: string;
 }

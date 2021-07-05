@@ -1,0 +1,13 @@
+<div *ngIf="loading">
+  <mat-spinner class="mat-spinner-center"></mat-spinner>
+</div>
+
+<h2 *ngIf="!loading" mat-dialog-title fxLayout="row" fxLayoutAlign="center center" class="modal-header">
+  Επιτυχής Εγγραφή </h2>
+<mat-dialog-content *ngIf="!loading" class="mat-typography">
+  <p>Η εγγραφή σας έγινε με επιτυχία και θα σας σταλεί email στο email: {{email}}</p>
+</mat-dialog-content>
+
+<mat-dialog-actions *ngIf="!loading" class="justify-content-end modal-footer">
+  <button mat-button color="primary" mat-dialog-close (click)="yes()">Εντάξει</button>
+</mat-dialog-actions>

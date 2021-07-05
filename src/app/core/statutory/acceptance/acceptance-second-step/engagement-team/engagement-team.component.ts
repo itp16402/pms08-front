@@ -17,8 +17,8 @@ import {AssignFormsToMemberComponent} from './assign-forms-to-member/assign-form
 import {EditAcceptanceComponent} from '../../../../../shared/shared-componets/edit-acceptance/edit-acceptance.component';
 import {MemberStatusControllerService} from '../../../../../shared/Injectables/services/acceptance/member-status-controller.service';
 import {FormStatusRequestDtoModel} from '../../../../../shared/models/form-status-request-dto.model';
-import {FormListDtoModel} from "../../../../../shared/models/general-form-view-models/form-list-dto.model";
-import {FormRoleControllerService} from "../../../../../shared/Injectables/services/form-role-controller.service";
+import {FormListDtoModel} from '../../../../../shared/models/general-form-view-models/form-list-dto.model';
+import {FormRoleControllerService} from '../../../../../shared/Injectables/services/form-role-controller.service';
 
 @Component({
   selector: 'app-engagement-team',
@@ -100,6 +100,8 @@ export class EngagementTeamComponent implements OnInit, AfterViewInit {
   memberId: any;
   memberCanMakeChangesIntoForm = false;
 
+  noDataMessage: any;
+
   constructor(private formListControllerService: FormListControllerService,
               private formRoleControllerService: FormRoleControllerService,
               private formsService: FormService,
@@ -142,7 +144,8 @@ export class EngagementTeamComponent implements OnInit, AfterViewInit {
         this.filteredMembers = [];
         this.isLoading = true;
       }),
-      switchMap(value => this.userControllerService.getAllUsers(this.currentUser).
+      switchMap(value => this.userControllerService.searchMemberByLastName(this.adminCtrl.value,
+        this.currentUser).
       pipe(
         finalize( () => {
           this.isLoading = false;
@@ -165,7 +168,8 @@ export class EngagementTeamComponent implements OnInit, AfterViewInit {
         this.filteredMembers = [];
         this.isLoading = true;
       }),
-      switchMap(value => this.userControllerService.getAllUsers(this.currentUser).
+      switchMap(value => this.userControllerService.searchMemberByLastName(this.memberCtrl.value,
+        this.currentUser).
       pipe(
         finalize( () => {
           this.isLoading = false;
@@ -188,7 +192,8 @@ export class EngagementTeamComponent implements OnInit, AfterViewInit {
         this.filteredMembers = [];
         this.isLoading = true;
       }),
-      switchMap(value => this.userControllerService.getAllUsers(this.currentUser).
+      switchMap(value => this.userControllerService.searchMemberByLastName(this.eqcrCtrl.value,
+        this.currentUser).
       pipe(
         finalize( () => {
           this.isLoading = false;
@@ -392,7 +397,7 @@ export class EngagementTeamComponent implements OnInit, AfterViewInit {
 
     dialogRef.afterClosed().subscribe(deleteMember => {
       if (deleteMember === 'Yes') {
-        this.userRoleControllerService.removeMember(member.memberId, this.projectId).subscribe(response => {
+        this.userRoleControllerService.removeMember(member.userId, this.projectId).subscribe(response => {
           if (response === null) {
             this.getMembers(this.projectId);
           }
